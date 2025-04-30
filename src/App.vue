@@ -1,7 +1,9 @@
 <template>
   <div class="school-website">
-    <!-- 顶部校徽和标题 -->
+     <!-- 登录按钮 -->
     <LoginButton :isLoggedIn="isLoggedIn" @logout="handleLogout" />
+    <router-view @login-success="handleLoginSuccess" />
+    <!-- 顶部校徽和标题 -->
     <header class="header">
       <div class="logo-container">
         <img src="https://via.placeholder.com/80x80" alt="校徽" class="logo">
@@ -34,7 +36,8 @@
 </template>
 
 <script>
-import { ref, markRaw,shallowRef } from 'vue'
+import { ref, markRaw, shallowRef } from 'vue'
+import { useRouter } from 'vue-router' // 添加路由导入
 import NavButton from './components/NavButton.vue'
 import Carousel from './components/Carousel.vue'
 import GuideView from './views/GuideView.vue'
@@ -42,7 +45,6 @@ import FiberView from './views/FiberView.vue'
 import AnalysisView from './views/AnalysisView.vue'
 import MoreView from './views/MoreView.vue'
 import LoginButton from './components/LoginButton.vue'
-
 export default {
   components: {
     NavButton,
@@ -54,8 +56,8 @@ export default {
     LoginButton
   },
   setup() {
+     const router = useRouter() // 获取路由实例
     const isLoggedIn = ref(localStorage.getItem('loggedIn') === 'true')
-
     const viewComponents = {
       guide: markRaw(GuideView),
       fiber: markRaw(FiberView),
@@ -66,20 +68,25 @@ export default {
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'analysis', title: '其他功能' },
+      { id: 'analysis', title: '图像分析' },
       { id: 'more', title: '更多' }
     ]
 
-    
     const activeButton = ref('guide')
   
 const currentView = shallowRef(markRaw(viewComponents.guide))
-   
-const handleLogout = () => {
-  isLoggedIn.value = false
-  window.location.href = '/login.html' // 或其他处理
-}
 
+    const handleLoginSuccess = () => {
+      // 
+       isLoggedIn.value = true
+      localStorage.setItem('loggedIn', 'true')
+    }
+    const handleLogout = () => {
+      isLoggedIn.value = false
+      localStorage.removeItem('loggedIn')
+       router.push('/') // 退出后跳转到首页
+      // window.location.href = '/login.html' // 或其他处理
+    }
 
     const slides = [
       {
@@ -113,7 +120,10 @@ const handleLogout = () => {
       activeButton,
       currentView,
       slides,
-      changeView
+      changeView,
+      isLoggedIn,
+      handleLoginSuccess,
+      handleLogout 
     }
   }
 }
@@ -125,16 +135,12 @@ const handleLogout = () => {
   max-width: 1200px;
   margin: 0 auto;
   color: #333;
-  padding-top:50px ;
-  
 }
 
 .header {
   background-color: #1a5fb4;
   color: white;
-  padding-left: 20px;
-  padding-right: 20px;
-
+  padding: 20px 0;
   text-align: center;
 }
 
@@ -168,12 +174,11 @@ const handleLogout = () => {
 }
 
 .footer {
-
   background-color: #1a5fb4;
   color: white;
   text-align: center;
   padding: 20px 0;
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
 .footer p {
