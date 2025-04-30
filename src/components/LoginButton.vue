@@ -14,7 +14,7 @@ export default {
       if (this.isLoggedIn) {
         this.$emit('logout')
       } else {
-        window.location.href = '/login.html'
+        this.$router.push('/login') // 使用vue-router跳转
       }
     }
   }
@@ -35,6 +35,7 @@ export default {
   cursor: pointer;
   width: 100pt;
 }
+
 .login-button:hover {
   background-color: darkgray;
 }
