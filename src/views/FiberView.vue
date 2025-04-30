@@ -1,0 +1,176 @@
+<template>
+  <!-- 模板部分保持不变 -->
+  <div class="fiber-view">
+    <h2>纤维识别</h2>
+    <div class="upload-area">
+      <div class="upload-box" @click="triggerUpload">
+        <div v-if="!imagePreview">
+          <span>+</span>
+          <p>点击上传纤维图片</p>
+        </div>
+        <img v-else :src="imagePreview" alt="上传的纤维图片">
+      </div>
+      <input 
+        type="file" 
+        ref="fileInput" 
+        @change="handleFileUpload" 
+        accept="image/*"
+        style="display: none;"
+      >
+    </div>
+    
+    <div class="result-area" v-if="analysisResult">
+      <h3>分析结果</h3>
+      <div class="result-content">
+        <div class="result-item" v-for="(value, key) in analysisResult" :key="key">
+          <span class="result-label">{{ key }}:</span>
+          <span class="result-value">{{ value }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <button class="analyze-btn" @click="analyzeImage" :disabled="!imagePreview || isLoading">
+      {{ isLoading ? '分析中...' : '开始分析' }}
+    </button>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      imagePreview: null,
+      analysisResult: null,
+      isLoading: false
+    }
+  },
+  methods: {
+    triggerUpload() {
+      this.$refs.fileInput.click()
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.imagePreview = e.target.result
+          this.analysisResult = null
+        }
+        reader.readAsDataURL(file)
+      }
+    },
+    async analyzeImage() {
+      if (!this.imagePreview) return
+      
+      this.isLoading = true
+      try {
+        const response = await fetch('http://localhost:8081/analyze/result', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: this.imagePreview 
+          })
+        })
+        
+        if (!response.ok) {
+          throw new Error('分析请求失败')
+        }
+        
+        const result = await response.json()
+        this.analysisResult = result
+        
+      } catch (error) {
+        console.error('分析错误:', error)
+        // 模拟结果，实际项目中应该处理错误
+        this.analysisResult = {
+          '纤维类型': '请求失败',
+          '错误': error.message
+        }
+      } finally {
+        this.isLoading = false
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.fiber-view {
+  padding: 20px;
+}
+
+.upload-area {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.upload-box {
+  width: 300px;
+  height: 200px;
+  border: 2px dashed #ccc;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-box:hover {
+  border-color: #1a5fb4;
+  background-color: #f5f9ff;
+}
+
+.upload-box img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.result-area {
+  margin-top: 30px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.result-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.result-label {
+  font-weight: bold;
+  color: #1a5fb4;
+}
+
+.analyze-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  background-color: #1a5fb4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.analyze-btn:hover {
+  background-color: #0d4b9e;
+}
+
+.analyze-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+</style>
