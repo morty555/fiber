@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+spring:
+  main:
+    allow-circular-references: true
+  profiles:
+    active: dev  # 激活 dev 配置，确保数据库连接生效
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/srp?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: Wang0324
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥（>=32字符）
+    admin-secret-key: itcast-itcast-itcast-itcast-123456
+    admin-ttl: 7200000
+    admin-token-name: token
+    user-secret-key: iteheima-iteheima-iteheima-iteheima
+    user-token-name: authentication
+    user-ttl: 7200000
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5tDVRS4AcAugPk9F5ybd
+    access-key-secret: MjxIEq2vK5qbiUu3bAn3lJGODBONKk
+    bucket-name: webfile-mt
