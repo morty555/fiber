@@ -1,4 +1,4 @@
-<template>
+ <template>
   <button class="login-button" @click="handleClick">
     {{ isLoggedIn ? '退出' : '登录' }}
   </button>
@@ -21,7 +21,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped> 
 .login-button {
   position: fixed;
   top: 20px;
@@ -39,4 +39,4 @@ export default {
 .login-button:hover {
   background-color: darkgray;
 }
-</style>
+</style> 
