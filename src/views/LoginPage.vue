@@ -27,6 +27,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'LoginPage',
   data() {
@@ -42,7 +43,7 @@ export default {
    // 登录成功
         alert('登录成功!') // 临时提示
         this.$emit('login-success')
-        this.$router.push('/') // 跳转到首页
+        this.$router.push('/guide') // 跳转到首页
       } 
       // 模拟登录成功后的跳转
       // this.$router.push('/dashboard') // 跳转到仪表盘
