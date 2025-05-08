@@ -25,8 +25,8 @@ const routes = [
         component: FiberView
       },
       {
-        path: 'analysis',
-        name: 'analysis',
+        path: 'function',
+        name: 'function',
         component: AnalysisView
       },
       {

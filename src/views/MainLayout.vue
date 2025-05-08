@@ -66,7 +66,7 @@ export default {
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'analysis', title: '图像分析' },
+      { id: 'function', title: '其他功能' },
       { id: 'more', title: '更多' }
     ]
 

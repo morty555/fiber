@@ -55,9 +55,9 @@ export default {
       tools: [
         {
           id: 'density',
-          name: '功能',
+          name: '历史记录',
           icon: '📊',
-          description: '功能描述',
+          description: '纤维图片与分析结果的历史记录',
           params: [
             { name: 'threshold', label: '阈值', type: 'number', min: 0, max: 255, step: 1 },
             { name: 'minArea', label: '最小面积', type: 'number', min: 1, step: 1 }

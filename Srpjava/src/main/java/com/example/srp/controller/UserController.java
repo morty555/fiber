@@ -1,8 +1,11 @@
 package com.example.srp.controller;
 
 import com.example.srp.constant.JwtClaimsConstant;
+import com.example.srp.pojo.dto.ImageDetailDto;
 import com.example.srp.pojo.dto.UserLoginDto;
+import com.example.srp.pojo.entity.ImageDetail;
 import com.example.srp.pojo.entity.User;
+import com.example.srp.pojo.vo.ImageDetailVo;
 import com.example.srp.properties.JwtProperties;
 import com.example.srp.result.Result;
 import com.example.srp.service.UserService;
@@ -33,7 +36,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public Result<UserLoginVo> test(@RequestBody UserLoginDto userLoginDto){
+    public Result<UserLoginVo> login(@RequestBody UserLoginDto userLoginDto){
          log.info("员工登陆:{}",userLoginDto);
          User user = userService.login(userLoginDto);
 
@@ -55,13 +58,6 @@ public class UserController {
 
     }
 
-    @GetMapping("/")
-    public void test2(@RequestParam String username){
-        System.out.println(username+"get请求");
-    }
 
-    @PostMapping("analyze/result")
-    public void test3(@RequestBody String image){
-        System.out.println("testsuccess");
-    }
+
 }
