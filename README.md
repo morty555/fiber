@@ -2,17 +2,17 @@
 
 ## Project setup
 ```
-npm install
+bun install
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+bun run serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+bun run build
 ```
 
 ### Customize configuration
