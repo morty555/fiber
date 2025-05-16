@@ -60,38 +60,36 @@ export default {
       }
     },
     async analyzeImage() {
-      if (!this.imagePreview) return
-      
-      this.isLoading = true
-      try {
-        const response = await fetch('http://localhost:8081/analyze/result', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            image: this.imagePreview 
-          })
-        })
-        
-        if (!response.ok) {
-          throw new Error('分析请求失败')
-        }
-        
-        const result = await response.json()
-        this.analysisResult = result
-        
-      } catch (error) {
-        console.error('分析错误:', error)
-        // 模拟结果，实际项目中应该处理错误
-        this.analysisResult = {
-          '纤维类型': '请求失败',
-          '错误': error.message
-        }
-      } finally {
-        this.isLoading = false
-      }
+  if (!this.$refs.fileInput.files[0]) return;
+
+  this.isLoading = true;
+  try {
+    const formData = new FormData();
+    formData.append('file', this.$refs.fileInput.files[0]); // 直接上传原始文件，不用 base64
+
+    const response = await fetch('http://localhost:8081/fiber/analyze', {
+      method: 'POST',
+      body: formData,
+      // 注意：不要手动设置 Content-Type，浏览器会自动设置带边界的 multipart/form-data
+    });
+
+    if (!response.ok) {
+      throw new Error('分析请求失败');
     }
+
+    const result = await response.json();
+    this.analysisResult = result;
+  } catch (error) {
+    console.error('分析错误:', error);
+    this.analysisResult = {
+      '纤维类型': '请求失败',
+      '错误': error.message
+    };
+  } finally {
+    this.isLoading = false;
+  }
+}
+
   }
 }
 </script>
