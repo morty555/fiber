@@ -67,7 +67,8 @@ export default {
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
       { id: 'function', title: '其他功能' },
-      { id: 'more', title: '更多' }
+      { id: 'more', title: '更多' },
+    
     ]
 
     const activeButton = ref('guide')
@@ -111,11 +112,14 @@ export default {
     }
   
     router.afterEach((to) => {
-      const routeName = to.name.toLowerCase()
-      if (navButtons.some(btn => btn.id === routeName)) {
-        activeButton.value = routeName
-      }
-    })
+  if (to.name && typeof to.name === 'string') {
+    const routeName = to.name.toLowerCase()
+    if (navButtons.some(btn => btn.id === routeName)) {
+      activeButton.value = routeName
+    }
+  }
+})
+
 
     return {
       navButtons,

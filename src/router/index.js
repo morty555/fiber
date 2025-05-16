@@ -6,6 +6,7 @@ import AnalysisView from '@/views/AnalysisView.vue'
 import MoreView from '@/views/MoreView.vue'
 import FiberView from '@/views/FiberView.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
+import HistoryView from '@/views/HistoryView.vue'
 const routes = [
   {
     path: '/',
@@ -28,7 +29,14 @@ const routes = [
       {
         path: 'function',
         name: 'function',
-        component: AnalysisView
+        component: AnalysisView,
+        children:[
+           {
+            path: 'history',
+            name: 'history',
+            component: HistoryView,
+           }
+        ]
       },
       {
         path: 'more',

@@ -45,6 +45,7 @@
         </div>
       </div>
     </div>
+     <router-view />
   </div>
 </template>
 
@@ -54,7 +55,7 @@ export default {
     return {
       tools: [
         {
-          id: 'density',
+          id: 'history',
           name: '历史记录',
           icon: '📊',
           description: '纤维图片与分析结果的历史记录',
@@ -94,16 +95,19 @@ export default {
     }
   },
   methods: {
-    selectTool(toolId) {
+     selectTool(toolId) {
+    if (toolId === 'history') {
+      this.$router.push('/function/history') // 👈 跳转到历史记录页面
+    } else {
       this.selectedTool = toolId
       this.showAnalysisResult = false
-      // 初始化参数值
       if (this.selectedToolData.params) {
         this.selectedToolData.params.forEach(param => {
           this.$set(this.paramValues, param.name, param.default || 0)
         })
       }
-    },
+    }
+  },
     uploadImage() {
       // 实际项目中实现图片上传逻辑
       alert('图片上传功能将在实际项目中实现')
