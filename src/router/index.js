@@ -5,6 +5,7 @@ import GuideView from '@/views/GuideView.vue'
 import AnalysisView from '@/views/AnalysisView.vue'
 import MoreView from '@/views/MoreView.vue'
 import FiberView from '@/views/FiberView.vue'
+import RegisterPage from '@/views/RegisterPage.vue'
 const routes = [
   {
     path: '/',
@@ -42,6 +43,11 @@ const routes = [
     name: 'login',
     component: LoginPage,
 
+  },
+  {
+    path:'/register',
+    name:'register',
+    component: RegisterPage
   },
 ]
 

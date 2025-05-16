@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-
+import java.time.LocalDateTime;
 
 
 @Service
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     public User login(UserLoginDto userLoginDto) {
         String username = userLoginDto.getUsername();
-        String password = userLoginDto.getPassword();
+        String password = DigestUtils.md5DigestAsHex(userLoginDto.getPassword().getBytes());
         User user = userMapper.getByUsername(username);
         if(user==null){
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FIND);
@@ -45,6 +45,21 @@ public class UserServiceImpl implements UserService {
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
         return user;
+    }
+
+
+    public void register(UserLoginDto userLoginDto) {
+        User user = new User();
+        String username = userLoginDto.getUsername();
+        String password = userLoginDto.getPassword();
+        user.setUsername(username);
+        user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+        user.setImage("");
+        user.setStatus(StatusConstant.DISABLE);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        userMapper.register(user);
+
     }
 
 }

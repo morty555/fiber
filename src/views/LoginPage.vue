@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 
 export default {
   name: 'LoginPage',
@@ -37,23 +38,38 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
-      // 这里添加实际的登录逻辑
- if (this.username === 'admin' && this.password === '123456') {
-   // 登录成功
-        alert('登录成功!') // 临时提示
-        this.$emit('login-success')
-        this.$router.push('/guide') // 跳转到首页
-      } 
-      // 模拟登录成功后的跳转
-      // this.$router.push('/dashboard') // 跳转到仪表盘
- else {
-         alert('用户名或密码错误!')
-      }
+async handleSubmit() {
+  try {
+    const response = await axios.post('/api/login', {
+      username: this.username,
+      password: this.password
+    });
+
+    const result = response.data;
+
+    if (result.code === 1) {
+      alert('登录成功!');
+      localStorage.setItem('token', result.data.token);
+      this.$router.push('/guide');
+    } else {
+      // 登录失败但请求成功，显示后端返回的具体错误
+      alert('登录失败: ' + result.msg);
     }
+
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.msg) {
+      alert('请求错误: ' + error.response.data.msg);
+    } else {
+      alert('请求失败，请检查网络或服务器。');
+    }
+    console.error('登录出错:', error);
+  }
+}
+
   }
 }
 </script>
+
 
 <style scoped>
 .login-container {

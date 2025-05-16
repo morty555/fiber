@@ -13,8 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginVo implements Serializable {
-    @ApiModelProperty("回传图像")
-    private String picture;
+
     @ApiModelProperty("用户名")
     private String username;
     @ApiModelProperty("主键值")

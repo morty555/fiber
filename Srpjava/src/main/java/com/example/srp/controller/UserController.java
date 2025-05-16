@@ -37,7 +37,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public Result<UserLoginVo> login(@RequestBody UserLoginDto userLoginDto){
-         log.info("员工登陆:{}",userLoginDto);
+         log.info("用户登陆:{}",userLoginDto);
          User user = userService.login(userLoginDto);
 
         //登录成功后，生成jwt令牌
@@ -58,6 +58,11 @@ public class UserController {
 
     }
 
-
+ @PostMapping("/register")
+    public  Result<UserLoginVo> register(@RequestBody UserLoginDto userLoginDto){
+        log.info("用户注册:{}",userLoginDto);
+        userService.register(userLoginDto);
+        return Result.success();
+ }
 
 }
