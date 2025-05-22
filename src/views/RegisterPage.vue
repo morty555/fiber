@@ -64,11 +64,12 @@ export default {
           password: this.password
         })
         // 假设后端返回 Result.success()
-        if (response.data.code === 200) {
+        if (response.data.code === 1) {
           alert('注册成功!')
           this.$router.push('/login')
         } else {
-          alert('注册失败: ' + (response.data.message || '未知错误'))
+          alert('注册失败: ' + (response.data.msg || '未知错误'))
+          console.log('注册响应:', response.data)
         }
       } catch (error) {
         console.error(error)

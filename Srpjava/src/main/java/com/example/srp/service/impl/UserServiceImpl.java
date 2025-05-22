@@ -3,6 +3,7 @@ package com.example.srp.service.impl;
 import com.example.srp.constant.AccountLockedException;
 import com.example.srp.constant.MessageConstant;
 import com.example.srp.constant.StatusConstant;
+import com.example.srp.exception.AccountExistedException;
 import com.example.srp.exception.AccountNotFoundException;
 import com.example.srp.exception.PasswordErrorException;
 import com.example.srp.mapper.UserMapper;
@@ -48,18 +49,34 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public void register(UserLoginDto userLoginDto) {
-        User user = new User();
+    public User register(UserLoginDto userLoginDto) {
+        User user;
         String username = userLoginDto.getUsername();
         String password = userLoginDto.getPassword();
-        user.setUsername(username);
-        user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-        user.setImage("");
-        user.setStatus(StatusConstant.DISABLE);
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
-        userMapper.register(user);
+        user = userMapper.getByUsername(username);
+        if(user!=null){
+            throw new AccountExistedException(MessageConstant.ACCOUNT_EXISTED);
+        }
+        else{
+            user.setUsername(username);
+            user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+            user.setImage("");
+            user.setStatus(StatusConstant.ENABLE);
+            user.setCreateTime(LocalDateTime.now());
+            user.setUpdateTime(LocalDateTime.now());
+//        user.builder()
+//                .password(DigestUtils.md5DigestAsHex(password.getBytes()))
+//                .username(username)
+//                .createTime(LocalDateTime.now())
+//                .updateTime(LocalDateTime.now())
+//                .image("")
+//                .status(StatusConstant.ENABLE)
+//                .build();
+            userMapper.register(user);
+        }
 
+
+        return user;
     }
 
 }

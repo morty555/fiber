@@ -18,4 +18,6 @@ public interface UserMapper {
 
     @Insert("insert into user(username,password,image,create_time,update_time,status)"+"values"+"(#{username},#{password},#{image},#{createTime},#{updateTime},#{status})")
     void register(User user);
+
+
 }

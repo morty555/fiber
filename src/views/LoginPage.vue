@@ -49,22 +49,21 @@ async handleSubmit() {
 
     if (result.code === 1) {
       alert('登录成功!');
-      localStorage.setItem('token', result.data.token);
+      localStorage.setItem('jwtToken', result.data.token);
       this.$router.push('/guide');
     } else {
-      // 登录失败但请求成功，显示后端返回的具体错误
-      alert('登录失败: ' + result.msg);
+      alert('登录失败: ' + (result.message || result.msg || '未知错误'));
     }
-
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.msg) {
-      alert('请求错误: ' + error.response.data.msg);
+    if (error.response && error.response.data && error.response.data.message) {
+      alert('请求错误: ' + error.response.data.message);
     } else {
       alert('请求失败，请检查网络或服务器。');
     }
     console.error('登录出错:', error);
   }
 }
+
 
   }
 }

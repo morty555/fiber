@@ -6,5 +6,5 @@ import com.example.srp.pojo.entity.User;
 public interface UserService {
     User login(UserLoginDto userLoginDto);
 
-    void register(UserLoginDto userLoginDto);
+    User register(UserLoginDto userLoginDto);
 }
