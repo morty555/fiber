@@ -19,6 +19,8 @@ public class ImageDetail implements Serializable {
 
     private String image;
 
+    private String analyzedImage;
+
     private LocalDateTime updateTime;
 
     private LocalDateTime createTime;
