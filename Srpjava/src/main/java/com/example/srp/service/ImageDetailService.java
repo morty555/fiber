@@ -3,8 +3,13 @@ package com.example.srp.service;
 import com.example.srp.pojo.dto.ImageDetailDto;
 import com.example.srp.pojo.dto.ImageDetailQueryDto;
 import com.example.srp.result.PageResult;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageDetailService {
-  PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto);
+   ImageDetailDto analyze(MultipartFile file) ;
+
+
+
+    PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto);
 
 }

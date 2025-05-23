@@ -17,9 +17,9 @@ public class ImageDetail implements Serializable {
 
     private Long id;
 
-    private String image;
+    private String originalImagePath;
 
-    private String analyzedImage;
+    private String analyzedImagePath;
 
     private LocalDateTime updateTime;
 

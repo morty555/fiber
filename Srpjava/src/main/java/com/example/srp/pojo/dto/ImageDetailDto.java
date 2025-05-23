@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 public class ImageDetailDto implements Serializable {
 
     private long id;
-    private String image;
+    private String originalImage;
     private String analyzedImage;
+    private String originalImagePath;
+    private String analyzedImagePath;
     private String imageDetail;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

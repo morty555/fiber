@@ -14,6 +14,11 @@ npm run serve
 ```
 npm run build
 ```
+### python project compiles
+```
+uv run python main.py
+```
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
