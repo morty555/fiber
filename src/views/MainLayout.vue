@@ -1,9 +1,9 @@
 <template>
   <div class="school-website" >
-<!--     
-     登录按钮  -->
-   <LoginButton :isLoggedIn="isLoggedIn" @logout="handleLogout"  />
-  
+<!--按钮  -->
+      <LoginButton :isLoggedIn="isLoggedIn" 
+      @logout="handleLogout"
+       />
 <!-- 顶部校徽和标题  -->
     <header class="header">
       <div class="logo-container">
@@ -25,8 +25,11 @@
 
     <!-- 内容区域 -->
     <main class="main-content">
-      <!-- <component :is="currentView"  /> -->
-       <router-view @login-success="handleLoginSuccess"></router-view>
+      
+       <router-view 
+       @login-success="handleLoginSuccess"
+       @analysis-complete="handleAnalysisComplete"
+       ></router-view>
     </main>
 
     <!-- 页脚 -->
@@ -48,7 +51,7 @@ import FiberView from './FiberView.vue'
 import AnalysisView from './AnalysisView.vue'
 import MoreView from './MoreView.vue'
 import LoginButton from '../components/LoginButton.vue'
-
+import HistoryView from './HistoryView.vue'
 export default {
   components: {
     NavButton,
@@ -58,7 +61,9 @@ export default {
     AnalysisView,
     MoreView,
     LoginButton,
+    HistoryView,
   },
+ 
   setup() {
      const router = useRouter() // 获取路由实例
     const isLoggedIn = ref(localStorage.getItem('loggedIn') === 'true')
@@ -66,25 +71,30 @@ export default {
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'function', title: '其他功能' },
-      { id: 'more', title: '更多' },
-    
+      { id: 'analysis', title: '图像分析' },
+      { id: 'more', title: '更多' }
     ]
 
     const activeButton = ref('guide')
 
     const handleLoginSuccess = () => {
-       isLoggedIn.value = true
+      isLoggedIn.value = true   
       localStorage.setItem('loggedIn', 'true')
-
+      router.push('/guide')
     }
     const handleLogout = () => {
       isLoggedIn.value = false
+      
       localStorage.removeItem('loggedIn')
-       router.push('/guide') // 退出后跳转到首页
-      // window.location.href = '/login.html' // 或其他处理
+      router.push('/guide') // 退出后跳转到首页
+      
     }
-
+    const handleAnalysisComplete = () => {
+      if (this.$route.name === 'history') {
+        this.$refs.HistoryView?.fetchRecords()
+      }
+      this.$bus.emit('refresh-history')
+    }
     const slides = [
       {
         id: 1,
@@ -110,16 +120,12 @@ export default {
       activeButton.value = buttonId
        router.push({ name: buttonId })
     }
-  
     router.afterEach((to) => {
-  if (to.name && typeof to.name === 'string') {
-    const routeName = to.name.toLowerCase()
-    if (navButtons.some(btn => btn.id === routeName)) {
-      activeButton.value = routeName
-    }
-  }
-})
-
+      const routeName = to.name.toLowerCase()
+      if (navButtons.some(btn => btn.id === routeName)) {
+        activeButton.value = routeName
+      }
+    })
 
     return {
       navButtons,
@@ -128,7 +134,8 @@ export default {
       changeView,
       handleLoginSuccess,
       handleLogout,
-     
+      isLoggedIn,
+     handleAnalysisComplete
     }
   }
 }
