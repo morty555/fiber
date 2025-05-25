@@ -30,13 +30,7 @@ const routes = [
         path: 'function',
         name: 'function',
         component: AnalysisView,
-        children:[
-           {
-            path: 'history',
-            name: 'history',
-            component: HistoryView,
-           }
-        ]
+       
       },
       {
         path: 'more',
@@ -57,11 +51,33 @@ const routes = [
     name:'register',
     component: RegisterPage
   },
+ 
+    {
+     path: '/history',
+     name: 'history',
+      component: HistoryView,
+      meta: {
+        requiresAuth: true,
+      }
+    }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem('loggedIn') === 'true'
+  
+  if (to.meta.requiresAuth) {
+    if (!isLoggedIn) {
+      alert('请先登录')
+      next('/login')
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
 export default router
