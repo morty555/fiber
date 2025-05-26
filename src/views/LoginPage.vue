@@ -50,7 +50,7 @@ async handleSubmit() {
 
     if (result.code === 1) {
       alert('登录成功!');
-       emitter.emit('login-success') 
+       emitter.emit('login-success'); 
       localStorage.setItem('jwtToken', result.data.token);
       localStorage.setItem('loggedIn', 'true');
       this.$router.push('/guide');

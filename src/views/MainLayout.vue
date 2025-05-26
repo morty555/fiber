@@ -1,9 +1,9 @@
 <template>
   <div class="school-website" >
-<!--     
-     登录按钮  -->
-   <LoginButton :isLoggedIn="isLoggedIn" @logout="handleLogout"  />
-  
+<!--按钮  -->
+      <LoginButton :isLoggedIn="isLoggedIn" 
+      @logout="handleLogout"
+       />
 <!-- 顶部校徽和标题  -->
     <header class="header">
       <div class="logo-container">
@@ -49,6 +49,7 @@ import AnalysisView from './AnalysisView.vue'
 import MoreView from './MoreView.vue'
 import LoginButton from '../components/LoginButton.vue'
 import emitter from '@/eventBus'
+import HistoryView from './HistoryView.vue'
 
 export default {
   components: {
@@ -59,7 +60,9 @@ export default {
     AnalysisView,
     MoreView,
     LoginButton,
+    HistoryView,
   },
+ 
   setup() {
      const router = useRouter() // 获取路由实例
     const isLoggedIn = ref(localStorage.getItem('loggedIn') === 'true')
@@ -67,9 +70,8 @@ export default {
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'function', title: '其他功能' },
-      { id: 'more', title: '更多' },
-    
+      { id: 'analysis', title: '图像分析' },
+      { id: 'more', title: '更多' }
     ]
     
     emitter.on('login-success',()=>{
@@ -86,11 +88,17 @@ export default {
     // }
     const handleLogout = () => {
       isLoggedIn.value = false
+      
       localStorage.removeItem('loggedIn')
-       router.push('/guide') // 退出后跳转到首页
-      // window.location.href = '/login.html' // 或其他处理
+      router.push('/guide') // 退出后跳转到首页
+      
     }
-
+    const handleAnalysisComplete = () => {
+      if (this.$route.name === 'history') {
+        this.$refs.HistoryView?.fetchRecords()
+      }
+      this.$bus.emit('refresh-history')
+    }
     const slides = [
       {
         id: 1,
@@ -116,16 +124,12 @@ export default {
       activeButton.value = buttonId
        router.push({ name: buttonId })
     }
-  
     router.afterEach((to) => {
-  if (to.name && typeof to.name === 'string') {
-    const routeName = to.name.toLowerCase()
-    if (navButtons.some(btn => btn.id === routeName)) {
-      activeButton.value = routeName
-    }
-  }
-})
-
+      const routeName = to.name.toLowerCase()
+      if (navButtons.some(btn => btn.id === routeName)) {
+        activeButton.value = routeName
+      }
+    })
 
     return {
       navButtons,
@@ -134,6 +138,7 @@ export default {
       changeView,
       handleLogout,
       isLoggedIn,
+      handleAnalysisComplete,
     }
   }
 }

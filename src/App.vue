@@ -6,7 +6,7 @@
 <script>
 import MainLayout from './views/MainLayout.vue';
 export default {
-  name: 'Main',
+  name: 'App',
   components: {
     MainLayout
   }

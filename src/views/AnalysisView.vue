@@ -97,7 +97,7 @@ export default {
   methods: {
      selectTool(toolId) {
     if (toolId === 'history') {
-      this.$router.push('/function/history') // 👈 跳转到历史记录页面
+      this.$router.push('/history') // 👈 跳转到历史记录页面
     } else {
       this.selectedTool = toolId
       this.showAnalysisResult = false
