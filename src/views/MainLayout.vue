@@ -25,9 +25,9 @@
 
     <!-- 内容区域 -->
     <main class="main-content">
-      <!-- <component :is="currentView"  /> -->
-       <router-view @login-success="handleLoginSuccess"></router-view>
-    </main>
+      
+     <router-view></router-view>
+    </main> 
 
     <!-- 页脚 -->
     <footer class="footer">
@@ -48,6 +48,7 @@ import FiberView from './FiberView.vue'
 import AnalysisView from './AnalysisView.vue'
 import MoreView from './MoreView.vue'
 import LoginButton from '../components/LoginButton.vue'
+import emitter from '@/eventBus'
 
 export default {
   components: {
@@ -70,14 +71,19 @@ export default {
       { id: 'more', title: '更多' },
     
     ]
+    
+    emitter.on('login-success',()=>{
+      isLoggedIn.value = true
+      localStorage.setItem('loggedIn','true')
+    })
 
     const activeButton = ref('guide')
 
-    const handleLoginSuccess = () => {
-       isLoggedIn.value = true
-      localStorage.setItem('loggedIn', 'true')
+    // const handleLoginSuccess = () => {
+    //    isLoggedIn.value = true
+    //   localStorage.setItem('loggedIn', 'true')
 
-    }
+    // }
     const handleLogout = () => {
       isLoggedIn.value = false
       localStorage.removeItem('loggedIn')
@@ -126,9 +132,8 @@ export default {
       activeButton,
       slides,
       changeView,
-      handleLoginSuccess,
       handleLogout,
-     
+      isLoggedIn,
     }
   }
 }

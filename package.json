@@ -11,6 +11,7 @@
     "core-js": "^3.8.3",
     "follow-redirects": "1.15.0",
     "http-proxy-middleware": "^2",
+    "mitt": "^3.0.1",
     "vue": "^3.2.13",
     "vue-router": "4",
     "webpack-dev-server": "^4"

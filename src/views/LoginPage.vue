@@ -28,6 +28,7 @@
 
 <script>
 import axios from 'axios'
+import emitter from '@/eventBus';
 
 export default {
   name: 'LoginPage',
@@ -49,7 +50,9 @@ async handleSubmit() {
 
     if (result.code === 1) {
       alert('登录成功!');
+       emitter.emit('login-success') 
       localStorage.setItem('jwtToken', result.data.token);
+      localStorage.setItem('loggedIn', 'true');
       this.$router.push('/guide');
     } else {
       alert('登录失败: ' + (result.message || result.msg || '未知错误'));
