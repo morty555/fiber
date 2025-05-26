@@ -26,7 +26,7 @@
     <!-- 内容区域 -->
     <main class="main-content">
       
-     <router-view></router-view>
+     <router-view @analysis-complete="handleAnalysisComplete" ></router-view>
     </main> 
 
     <!-- 页脚 -->
@@ -70,7 +70,7 @@ export default {
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'analysis', title: '图像分析' },
+      { id: 'function', title: '图像分析' },
       { id: 'more', title: '更多' }
     ]
     
