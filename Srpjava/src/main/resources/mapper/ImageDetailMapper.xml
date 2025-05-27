@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.srp.mapper.ImageDetailMapper">
+
+    <select id="pageQuery" resultType="com.example.srp.pojo.vo.ImageDetailVo">
+        SELECT
+        id,
+        original_image_path,
+        analyzed_image_path,
+        detail,
+        update_time,
+        create_time
+        FROM image_detail
+        <where>
+            <if test="search != null and search != ''">
+                AND detail LIKE CONCAT('%', #{search}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="sortField != null and sortField != '' and sortOrder != null and sortOrder != ''">
+                ORDER BY
+                ${sortField} ${sortOrder}
+            </when>
+            <otherwise>
+                ORDER BY create_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    </mapper>

@@ -16,18 +16,23 @@ def analyze_image(image: Image.Image) -> dict:
     gray = cv2.cvtColor(image_cv, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, threshold1=50, threshold2=150)
 
-    # # 显示处理后的边缘图（灰度图）
-    # cv2.imshow("Edges", edges)
-    # cv2.waitKey(0)  # 等待按键
-    # cv2.destroyAllWindows()
-    
+    # 将边缘图转换成Base64字符串
+    # edges是单通道灰度图，需要转换成三通道才方便编码为png/jpg
+    edges_color = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
+    success, encoded_image = cv2.imencode('.png', edges_color)
+    if not success:
+        return {"error": "图像编码失败"}
+    base64_encoded_edges = base64.b64encode(encoded_image.tobytes()).decode('utf-8')
+
     # 统计有多少个边缘像素
     edge_count = np.sum(edges > 0)
     result = {
         "edge_pixel_count": int(edge_count),
-        "analysis": f"图像边缘像素点数量：{edge_count}"
+        "analysis": f"图像边缘像素点数量：{edge_count}",
+        "analyzed_image": base64_encoded_edges
     }
     return result
+
 
 @app.route("/analyze", methods=["POST"])
 def analyze():

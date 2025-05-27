@@ -72,20 +72,22 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             Map result = response.getBody();
             String analysis = (String) result.get("analysis");
             Integer edgePixelCount = (Integer) result.get("edge_pixel_count");
-            System.out.println(analysis+"+"+result);
-
 
             //上传分析后的图片
-            String analyzedImage = dto.getOriginalImage();
+            String analyzedImage = (String) result.get("analyzed_image");
             MultipartFile analyzedFile = base64ToMultipart(analyzedImage);
             String analyzedImagePath = uploadAliOss(analyzedFile, AliyunPathConstant.ANALYZED_IMAGE);
+
+            // 保存路径和 Base64 到 dto
+            dto.setAnalyzedImage(analyzedImage);
+            dto.setAnalyzedImagePath(analyzedImagePath);
+
+            System.out.println(result);
 
             // 这里根据业务，给dto设置其他字段
             dto.setCreateTime(LocalDateTime.now());
             dto.setUpdateTime(LocalDateTime.now());
-            dto.setImageDetail(analysis);
-            dto.setAnalyzedImage(base64Image);
-            dto.setAnalyzedImagePath(analyzedImagePath);
+            dto.setImageDetail(analysis+","+edgePixelCount);
             dto.setOriginalImagePath(originalImagePath);
 
             ImageDetail imageDetail = new ImageDetail();

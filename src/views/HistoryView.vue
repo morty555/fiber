@@ -67,8 +67,8 @@
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
               </span>
             </th>
-            <th @click="sortBy('createTime')">创建时间
-              <span v-if="sortField === 'createTime'">
+            <th @click="sortBy('createime')">创建时间
+              <span v-if="sortField === 'create_time'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
               </span>
             </th>
@@ -77,13 +77,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="record in paginatedRecords" :key="record.id">
+          <tr v-for="record in paginatedRecords.records" :key="record.id">
             <td>{{ record.id }}</td>
             <td>
               <img 
-                :src="getImageUrl(record.imagePath)" 
+                :src="getImageUrl(record.originalImagePath)" 
                 class="thumbnail" 
-                @click="showImagePreview(getImageUrl(record.imagePath))"
+                @click="showImagePreview(getImageUrl(record.originalImagePath))"
               >
             </td>
             <td>{{ getAnalysisTypeName(record.analysisType) }}</td>
@@ -155,7 +155,7 @@ export default {
   setup() {
     const router = useRouter()
     
-    const API_BASE_URL = 'http://localhost:8000'
+    const API_BASE_URL = 'http://localhost:8081'
     const authToken = localStorage.getItem('authToken')
 
     const records = ref([])
@@ -164,7 +164,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const pageSize = ref(5)
-    const sortField = ref('createTime')
+    const sortField = ref('create_time')
     const sortOrder = ref('desc')
     const totalRecords = ref(0)
     const showModal = ref(false)
@@ -186,23 +186,30 @@ export default {
     const fetchRecords = async () => {
       loading.value = true
       error.value = null
-      
+
+
       try {
-        const response = await axios.post(`${API_BASE_URL}/history`, {
-          params: {
-            page: currentPage.value,
-            pageSize: pageSize.value,
-            sortField: sortField.value,
-            sortOrder: sortOrder.value,
-            search: searchQuery.value
-          },
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        })
+       const response = await axios.post(
+  `${API_BASE_URL}/function/history`,
+  {
+    page: currentPage.value,
+    pageSize: pageSize.value,
+    sortField: sortField.value,
+    sortOrder: sortOrder.value,
+    search: searchQuery.value
+  },
+  {
+    headers: {
+      'Authorization': `Bearer ${authToken}`
+    }
+  }
+)
+
         
         records.value = response.data.data
         totalRecords.value = response.data.total
+            //console.log(records.value)
+            // console.log(authToken)
       } catch (error) {
         handleApiError(error)
       } finally {
@@ -280,11 +287,13 @@ export default {
         sortField.value = field
         sortOrder.value = 'asc'
       }
+      fetchRecords()  //触发重新请求
     }
 
     // 图片处理
     const getImageUrl = (path) => {
-      return path ? `${API_BASE_URL}/uploads/${path}` : 'https://via.placeholder.com/150?text=No+Image'
+      //console.log(path)
+      return path || 'https://via.placeholder.com/150?text=No+Image'
     }
 
     // 分析类型
@@ -346,6 +355,7 @@ export default {
     })
 
     const paginatedRecords = computed(() => {
+      console.log(records.value)
       return records.value
     })
 
