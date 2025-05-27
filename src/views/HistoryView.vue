@@ -62,8 +62,8 @@
               </span>
             </th>
             <th>样本图片</th>
-            <th @click="sortBy('analysisType')">分析类型
-              <span v-if="sortField === 'analysisType'">
+            <th @click="sortBy('imagedetail')">分析类型
+              <span v-if="sortField === 'imagedetail'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
               </span>
             </th>
@@ -86,7 +86,7 @@
                 @click="showImagePreview(getImageUrl(record.originalImagePath))"
               >
             </td>
-            <td>{{ getAnalysisTypeName(record.analysisType) }}</td>
+            <td>{{ getAnalysisType(record.imagedetail) }}</td>
             <td>{{ formatDateTime(record.createTime) }}</td>
           
             <td>
@@ -166,27 +166,49 @@ export default {
     const pageSize = ref(5)
     const sortField = ref('create_time')
     const sortOrder = ref('desc')
-    const totalRecords = ref(0)
     const showModal = ref(false)
     const previewImage = ref('')
     const showParamsModal=ref(false)
     const currentParams = ref({})
     const showDeleteDialog = ref(false)
     const recordToDelete = ref(null)
+    const filteredRecords = computed(() => {
+      const query = searchQuery.value.toLowerCase()
+      if (!query) return records.value
+      
+      return records.value.filter(record => 
+        record.id.toString().includes(query) ||
+        (record.imagedetail && record.imagedetail.toLowerCase().includes(query)) ||
+        formatDateTime(record.createTime).toLowerCase().includes(query)
+      )
+    })
 
-    // 类型
-    const analysisTypes = {
-      density: '纤维密度分析',
-      length: '纤维长度测量',
-      color: '颜色分析',
-      orientation: '取向分析',
-    }
+    const sortedRecords = computed(() => {
+      return [...filteredRecords.value].sort((a, b) => {
+        let valA = a[sortField.value]
+        let valB = b[sortField.value]
+        
+        if (sortField.value === 'createTime') {
+          valA = new Date(valA).getTime()
+          valB = new Date(valB).getTime()
+        } else if (sortField.value === 'imagedetail') {
+          valA = a.imagedetail || ''
+          valB = b.imagedetail || ''
+        }
+        
+        return sortOrder.value === 'asc' 
+          ? valA > valB ? 1 : -1 
+          : valA < valB ? 1 : -1
+      })
+    })
 
+    const totalRecords = computed(() => {
+      return filteredRecords.value.length
+    })
     
     const fetchRecords = async () => {
       loading.value = true
       error.value = null
-
 
       try {
        const response = await axios.post(
@@ -205,9 +227,8 @@ export default {
   }
 )
 
-        
         records.value = response.data.data
-        totalRecords.value = response.data.total
+       // totalRecords.value = response.data.total
             //console.log(records.value)
             // console.log(authToken)
       } catch (error) {
@@ -298,7 +319,7 @@ export default {
 
     // 分析类型
     const getAnalysisTypeName = (type) => {
-      return analysisTypes[type] || type
+      return  type
     }
 
     // 日期格式化
@@ -355,8 +376,10 @@ export default {
     })
 
     const paginatedRecords = computed(() => {
-      console.log(records.value)
-      return records.value
+      //console.log(records.value)
+      const start = (currentPage.value - 1) * pageSize.value
+      return sortedRecords.value.slice(start, start + pageSize.value)
+     // return records.value
     })
 
     
@@ -392,7 +415,8 @@ export default {
       showParamsModal,
       currentParams,
       showDeleteDialog,
-      
+      filteredRecords,
+      sortedRecords,
       totalPages,
       paginatedRecords,
       
@@ -404,7 +428,7 @@ export default {
       handlePageSizeChange,
       sortBy,
       getImageUrl,
-      getAnalysisTypeName,
+      getAnalysisType,
       formatDateTime,
       showParams,
       showImagePreview,
