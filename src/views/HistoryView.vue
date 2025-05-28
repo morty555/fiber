@@ -62,12 +62,12 @@
               </span>
             </th>
             <th>样本图片</th>
-            <th @click="sortBy('imagedetail')">分析类型
-              <span v-if="sortField === 'imagedetail'">
+            <th @click="sortBy('imageDetail')">分析结果
+              <span v-if="sortField === 'imageDetail'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
               </span>
             </th>
-            <th @click="sortBy('createime')">创建时间
+            <th @click="sortBy('create_time')">创建时间
               <span v-if="sortField === 'create_time'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
               </span>
@@ -77,7 +77,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="record in paginatedRecords.records" :key="record.id">
+          <tr v-for="record in paginatedRecords" :key="record.id">
             <td>{{ record.id }}</td>
             <td>
               <img 
@@ -86,7 +86,7 @@
                 @click="showImagePreview(getImageUrl(record.originalImagePath))"
               >
             </td>
-            <td>{{ getAnalysisType(record.imagedetail) }}</td>
+            <td>{{ getAnalysisDetail(record.imageDetail) }}</td>
             <td>{{ formatDateTime(record.createTime) }}</td>
           
             <td>
@@ -173,38 +173,39 @@ export default {
     const showDeleteDialog = ref(false)
     const recordToDelete = ref(null)
     const filteredRecords = computed(() => {
-      const query = searchQuery.value.toLowerCase()
-      if (!query) return records.value
-      
-      return records.value.filter(record => 
-        record.id.toString().includes(query) ||
-        (record.imagedetail && record.imagedetail.toLowerCase().includes(query)) ||
-        formatDateTime(record.createTime).toLowerCase().includes(query)
-      )
-    })
+  const raw = records.value?.records || []
+  const query = searchQuery.value.toLowerCase()
 
-    const sortedRecords = computed(() => {
-      return [...filteredRecords.value].sort((a, b) => {
-        let valA = a[sortField.value]
-        let valB = b[sortField.value]
-        
-        if (sortField.value === 'createTime') {
-          valA = new Date(valA).getTime()
-          valB = new Date(valB).getTime()
-        } else if (sortField.value === 'imagedetail') {
-          valA = a.imagedetail || ''
-          valB = b.imagedetail || ''
-        }
-        
-        return sortOrder.value === 'asc' 
-          ? valA > valB ? 1 : -1 
-          : valA < valB ? 1 : -1
-      })
-    })
+  if (!query) return raw
 
-    const totalRecords = computed(() => {
-      return filteredRecords.value.length
-    })
+  return raw.filter(record => 
+    record.id.toString().includes(query) ||
+    (record.imageDetail && record.imageDetail.toLowerCase().includes(query)) ||
+    formatDateTime(record.createTime).toLowerCase().includes(query)
+  )
+})
+
+const sortedRecords = computed(() => {
+  return [...filteredRecords.value].sort((a, b) => {
+    let valA = a[sortField.value]
+    let valB = b[sortField.value]
+
+    if (sortField.value === 'create_time') {
+      valA = new Date(valA).getTime()
+      valB = new Date(valB).getTime()
+    } else if (sortField.value === 'imageDetail') {
+      valA = a.imageDetail || ''
+      valB = b.imageDetail || ''
+    }
+
+    return sortOrder.value === 'asc' 
+      ? valA > valB ? 1 : -1 
+      : valA < valB ? 1 : -1
+  })
+})
+
+const totalRecords = computed(() => filteredRecords.value.length)
+
     
     const fetchRecords = async () => {
       loading.value = true
@@ -318,8 +319,8 @@ export default {
     }
 
     // 分析类型
-    const getAnalysisTypeName = (type) => {
-      return  type
+    const getAnalysisDetail = (imageDetail) => {
+      return  imageDetail
     }
 
     // 日期格式化
@@ -428,7 +429,7 @@ export default {
       handlePageSizeChange,
       sortBy,
       getImageUrl,
-      getAnalysisType,
+      getAnalysisDetail,
       formatDateTime,
       showParams,
       showImagePreview,

@@ -108,6 +108,7 @@ public class ImageDetailServiceImpl implements ImageDetailService{
     public PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto) {
         PageHelper.startPage(imageDetailQueryDto.getPage(),imageDetailQueryDto.getPageSize());
         Page<ImageDetailVo> page = imageDetailMapper.pageQuery(imageDetailQueryDto);
+        //System.out.println(page);
         return new PageResult(page.getTotal(),page.getResult());
     }
 

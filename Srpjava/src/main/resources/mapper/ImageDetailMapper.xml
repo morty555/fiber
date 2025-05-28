@@ -8,7 +8,7 @@
         id,
         original_image_path,
         analyzed_image_path,
-        detail,
+        image_detail,
         update_time,
         create_time
         FROM image_detail
