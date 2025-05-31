@@ -18,6 +18,7 @@ npm run build
 ```
 uv run python main.py
 ```
+and you should install some libraies before running the project
 
 
 ### Customize configuration
