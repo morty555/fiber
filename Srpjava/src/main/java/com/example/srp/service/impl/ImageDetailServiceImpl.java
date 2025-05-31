@@ -4,6 +4,7 @@ import com.example.srp.constant.AliyunPathConstant;
 import com.example.srp.mapper.ImageDetailMapper;
 import com.example.srp.pojo.dto.ImageDetailDto;
 import com.example.srp.pojo.dto.ImageDetailQueryDto;
+import com.example.srp.pojo.dto.ImageDetailReturnDto;
 import com.example.srp.pojo.entity.ImageDetail;
 import com.example.srp.pojo.vo.ImageDetailVo;
 import com.example.srp.result.PageResult;
@@ -17,20 +18,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.glassfish.jaxb.core.v2.TODO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -45,11 +46,11 @@ public class ImageDetailServiceImpl implements ImageDetailService{
     public ImageDetailDto analyze(MultipartFile file) {
         ImageDetailDto dto = new ImageDetailDto();
 
-        //上传原始图片
+        // 上传原始图片（你现有代码）
         String originalImagePath = uploadAliOss(file, AliyunPathConstant.ORIGINAL_IMAGE);
 
         try {
-            // 将图片文件转成Base64字符串
+            // 生成 Base64 原图字符串（你现有代码）
             byte[] bytes = file.getBytes();
             String base64Image = Base64.getEncoder().encodeToString(bytes);
             dto.setOriginalImage(base64Image);
@@ -57,52 +58,59 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             RestTemplate restTemplate = new RestTemplate();
             String pythonUrl = "http://localhost:5001/analyze";
 
-            // 构建请求体
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("image", base64Image);
+            // ----------- 这里是关键修改部分 ---------------
+            // 用 Multipart/form-data 发送文件给 Python 服务
+            MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+            ByteArrayResource resource = new ByteArrayResource(bytes) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            };
+            bodyMap.add("image", resource);
 
-            // 发送 POST 请求到 Python
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<Map> response = restTemplate.postForEntity(pythonUrl, entity, Map.class);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            //传回python识别后的图片与识别结果
-            // 解析返回值
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+            ResponseEntity<Map> response = restTemplate.postForEntity(pythonUrl, requestEntity, Map.class);
+            // ----------------------------------------------
+
+            // 解析返回结果（你现有代码）
             Map result = response.getBody();
-            String analysis = (String) result.get("analysis");
-            Integer edgePixelCount = (Integer) result.get("edge_pixel_count");
+            ArrayList<String> stats = (ArrayList<String>) result.get("stats");
+            String unit = (String) result.get("unit");
+            Double upp = (Double) result.get("upp");
 
-            //上传分析后的图片
-            String analyzedImage = (String) result.get("analyzed_image");
+
+            // base64转 MultipartFile，上传分析图（你现有代码）
+            String analyzedImage = (String) result.get("image_base64");
             MultipartFile analyzedFile = base64ToMultipart(analyzedImage);
             String analyzedImagePath = uploadAliOss(analyzedFile, AliyunPathConstant.ANALYZED_IMAGE);
 
-            // 保存路径和 Base64 到 dto
             dto.setAnalyzedImage(analyzedImage);
             dto.setAnalyzedImagePath(analyzedImagePath);
-
-            System.out.println(result);
-
-            // 这里根据业务，给dto设置其他字段
             dto.setCreateTime(LocalDateTime.now());
             dto.setUpdateTime(LocalDateTime.now());
-            dto.setImageDetail(analysis+","+edgePixelCount);
+            dto.setImageDetail(stats + "," +","+upp);
             dto.setOriginalImagePath(originalImagePath);
 
+            ImageDetailReturnDto returnDto = new ImageDetailReturnDto();
+            BeanUtils.copyProperties(dto, returnDto);
+
+            System.out.print("图片分析"+dto.getImageDetail());
             ImageDetail imageDetail = new ImageDetail();
             BeanUtils.copyProperties(dto, imageDetail);
-            //将oss存储地址等信息保存
             imageDetailMapper.addNewImageDetail(imageDetail);
-
 
         } catch (IOException e) {
             e.printStackTrace();
-           System.out.println("文件上传失败");
+            System.out.println("文件上传失败");
         }
 
         return dto;
     }
+
 
     //分页查询结果
     public PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto) {

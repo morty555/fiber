@@ -1,4 +1,4 @@
-package com.example.srp.pojo.vo;
+package com.example.srp.pojo.dto;
 
 import lombok.Data;
 
@@ -6,8 +6,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class ImageDetailVo implements Serializable {
-
+public class ImageDetailReturnDto implements Serializable {
+    private String originalImage;
+    private String analyzedImage;
     private String originalImagePath;
     private String analyzedImagePath;
     private String imageDetail;

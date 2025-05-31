@@ -156,7 +156,7 @@ export default {
     const router = useRouter()
     
     const API_BASE_URL = 'http://localhost:8081'
-    const authToken = localStorage.getItem('authToken')
+    const authToken = localStorage.getItem('jwtToken')
 
     const records = ref([])
     const loading = ref(false)
@@ -231,7 +231,7 @@ const totalRecords = computed(() => filteredRecords.value.length)
         records.value = response.data.data
        // totalRecords.value = response.data.total
             //console.log(records.value)
-            // console.log(authToken)
+         //console.log(authToken)
       } catch (error) {
         handleApiError(error)
       } finally {

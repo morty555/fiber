@@ -60,6 +60,7 @@ export default {
       }
     },
     async analyzeImage() {
+      const token = localStorage.getItem('jwtToken');
   if (!this.$refs.fileInput.files[0]) return;
 
   this.isLoading = true;
@@ -69,6 +70,10 @@ export default {
 
     const response = await fetch('http://localhost:8081/fiber/analyze', {
       method: 'POST',
+       headers: {
+        'Authorization': `Bearer ${token}`
+        // 注意：不要设置 Content-Type，浏览器会自动处理 multipart/form-data 的 boundary
+      },
       body: formData,
       // 注意：不要手动设置 Content-Type，浏览器会自动设置带边界的 multipart/form-data
     });

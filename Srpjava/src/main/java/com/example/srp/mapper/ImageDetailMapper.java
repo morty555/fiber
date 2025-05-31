@@ -12,6 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ImageDetailMapper {
     Page<ImageDetailVo> pageQuery(ImageDetailQueryDto imageDetailQueryDto);
 
-    @Insert("insert into image_detail(id,original_image_path,analyzed_image_path,detail,update_time,create_time)"+"values"+"(#{id},#{originalImagePath},#{analyzedImagePath},#{imageDetail},#{updateTime},#{createTime})")
+    @Insert("insert into image_detail(id,original_image_path,analyzed_image_path,image_detail,update_time,create_time)"+"values"+"(#{id},#{originalImagePath},#{analyzedImagePath},#{imageDetail},#{updateTime},#{createTime})")
     void addNewImageDetail(ImageDetail imageDetail);
 }
