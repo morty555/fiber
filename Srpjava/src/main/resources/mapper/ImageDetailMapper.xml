@@ -14,8 +14,17 @@
         FROM image_detail
         <where>
             <if test="search != null and search != ''">
-                AND detail LIKE CONCAT('%', #{search}, '%')
+                AND image_detail LIKE CONCAT('%', #{search}, '%')
             </if>
+
+            <choose>
+                <when test="owner != null">
+                    AND owner = #{owner}
+                </when>
+                <otherwise>
+                    AND owner IS NOT NULL
+                </otherwise>
+            </choose>
         </where>
         <choose>
             <when test="sortField != null and sortField != '' and sortOrder != null and sortOrder != ''">

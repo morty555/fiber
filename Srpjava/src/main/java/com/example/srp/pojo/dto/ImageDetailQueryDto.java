@@ -13,4 +13,6 @@ public class ImageDetailQueryDto {
     private String sortOrder;
 
     private String sortField;
+
+    private Long owner;
 }

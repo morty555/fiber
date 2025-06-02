@@ -26,4 +26,6 @@ public class ImageDetail implements Serializable {
     private LocalDateTime createTime;
 
     private String ImageDetail;
+
+    private Long owner;
 }

@@ -12,6 +12,7 @@ import com.example.srp.result.Result;
 import com.example.srp.service.ImageDetailService;
 import com.example.srp.utils.AliOssUtil;
 import com.example.srp.utils.Base64ToMultipartUtil;
+import com.example.srp.utils.ThreadLocalUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -45,22 +46,24 @@ public class ImageDetailServiceImpl implements ImageDetailService{
 
     public ImageDetailDto analyze(MultipartFile file) {
         ImageDetailDto dto = new ImageDetailDto();
-
-        // 上传原始图片（你现有代码）
+        Long currentId = ThreadLocalUtil.getCurrentId();
+        // 上传原始图片
         String originalImagePath = uploadAliOss(file, AliyunPathConstant.ORIGINAL_IMAGE);
 
         try {
-            // 生成 Base64 原图字符串（你现有代码）
+            // 生成 Base64 原图字符串
             byte[] bytes = file.getBytes();
             String base64Image = Base64.getEncoder().encodeToString(bytes);
             dto.setOriginalImage(base64Image);
 
-            RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = new RestTemplate(); //java发送请求
             String pythonUrl = "http://localhost:5001/analyze";
 
-            // ----------- 这里是关键修改部分 ---------------
+
             // 用 Multipart/form-data 发送文件给 Python 服务
-            MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+            MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();//构造 multipart/form-data 的请求体
+            //用字节模拟文件上传	把 byte[] 变成 Flask 能识别的“文件”
+            //如果此处直接使用base64 问题：1.base64 比原始图片大 30% 左右 2.Python 接收后还要额外解码 3.若你想复用 multipart 接口或未来扩展为表单上传，这种方式更通用
             ByteArrayResource resource = new ByteArrayResource(bytes) {
                 @Override
                 public String getFilename() {
@@ -73,7 +76,7 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
-            ResponseEntity<Map> response = restTemplate.postForEntity(pythonUrl, requestEntity, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(pythonUrl, requestEntity, Map.class); //也可以用自定义类接收返回数据
             // ----------------------------------------------
 
             // 解析返回结果（你现有代码）
@@ -88,6 +91,7 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             MultipartFile analyzedFile = base64ToMultipart(analyzedImage);
             String analyzedImagePath = uploadAliOss(analyzedFile, AliyunPathConstant.ANALYZED_IMAGE);
 
+            dto.setOwner(currentId);
             dto.setAnalyzedImage(analyzedImage);
             dto.setAnalyzedImagePath(analyzedImagePath);
             dto.setCreateTime(LocalDateTime.now());

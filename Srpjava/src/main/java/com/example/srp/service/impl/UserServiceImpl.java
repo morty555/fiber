@@ -10,6 +10,7 @@ import com.example.srp.mapper.UserMapper;
 import com.example.srp.pojo.dto.UserLoginDto;
 import com.example.srp.pojo.entity.User;
 import com.example.srp.service.UserService;
+import com.example.srp.utils.ThreadLocalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
         String username = userLoginDto.getUsername();
         String password = DigestUtils.md5DigestAsHex(userLoginDto.getPassword().getBytes());
         User user = userMapper.getByUsername(username);
+        ThreadLocalUtil.setCurrentId(user.getId());
         if(user==null){
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FIND);
         }

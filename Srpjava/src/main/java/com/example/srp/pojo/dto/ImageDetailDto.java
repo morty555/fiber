@@ -16,5 +16,6 @@ public class ImageDetailDto implements Serializable {
     private String imageDetail;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private long owner;
 
 }
