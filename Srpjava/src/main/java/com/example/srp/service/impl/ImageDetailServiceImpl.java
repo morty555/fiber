@@ -119,9 +119,15 @@ public class ImageDetailServiceImpl implements ImageDetailService{
     //分页查询结果
     public PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto) {
         PageHelper.startPage(imageDetailQueryDto.getPage(),imageDetailQueryDto.getPageSize());
+        imageDetailQueryDto.setOwner(ThreadLocalUtil.getCurrentId());
         Page<ImageDetailVo> page = imageDetailMapper.pageQuery(imageDetailQueryDto);
         //System.out.println(page);
         return new PageResult(page.getTotal(),page.getResult());
+    }
+
+    @Override
+    public void deleteDetail(Long id) {
+         imageDetailMapper.deleteDetailById(id);
     }
 
     public String uploadAliOss(MultipartFile file,String path) {

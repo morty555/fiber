@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ImageDetailVo implements Serializable {
-
+    private long id;
     private String originalImagePath;
     private String analyzedImagePath;
     private String imageDetail;

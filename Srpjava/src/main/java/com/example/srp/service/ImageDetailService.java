@@ -12,4 +12,5 @@ public interface ImageDetailService {
 
     PageResult pageQuery(ImageDetailQueryDto imageDetailQueryDto);
 
+    void deleteDetail(Long id);
 }

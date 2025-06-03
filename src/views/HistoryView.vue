@@ -79,6 +79,7 @@
         <tbody>
           <tr v-for="record in paginatedRecords" :key="record.id">
             <td>{{ record.id }}</td>
+           
             <td>
               <img 
                 :src="getImageUrl(record.originalImagePath)" 
@@ -258,7 +259,8 @@ const totalRecords = computed(() => filteredRecords.value.length)
 
     const deleteRecord = async (id) => {
       try {
-        await axios.delete(`${API_BASE_URL}/history/${id}`, {
+        //console.log("do")
+        await axios.delete(`${API_BASE_URL}/function/history/${id}`, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
@@ -349,12 +351,15 @@ const totalRecords = computed(() => filteredRecords.value.length)
 
     // 确认删除
     const confirmDelete = (id) => {
+     
       recordToDelete.value = id
+      console.log(recordToDelete.value )
       showDeleteDialog.value = true
     }
 
     // 执行
     const executeDelete = () => {
+     console.log(recordToDelete.value )
       if (recordToDelete.value) {
         deleteRecord(recordToDelete.value)
       }

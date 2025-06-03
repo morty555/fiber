@@ -40,7 +40,7 @@
 
 <script>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router' // 添加路由导入
+import { useRouter } from 'vue-router'
 import NavButton from '../components/NavButton.vue'
 import Carousel from '@/components/Carousel.vue'
 import GuideView from './GuideView.vue'
@@ -64,6 +64,7 @@ export default {
   },
  
   setup() {
+
      const router = useRouter() // 获取路由实例
     const isLoggedIn = ref(localStorage.getItem('loggedIn') === 'true')
 

@@ -30,7 +30,8 @@ public class UserServiceImpl implements UserService {
         String username = userLoginDto.getUsername();
         String password = DigestUtils.md5DigestAsHex(userLoginDto.getPassword().getBytes());
         User user = userMapper.getByUsername(username);
-        ThreadLocalUtil.setCurrentId(user.getId());
+
+       // ThreadLocalUtil.setCurrentId(user.getId());
         if(user==null){
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FIND);
         }
