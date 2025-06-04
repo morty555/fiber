@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.example.srp.constant.ImageConstant.CATEGORY;
+import static com.example.srp.constant.ImageConstant.CONFIDENCE;
+
 @Service
 @Slf4j
 public class ImageDetailServiceImpl implements ImageDetailService{
@@ -84,6 +87,8 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             ArrayList<String> stats = (ArrayList<String>) result.get("stats");
             String unit = (String) result.get("unit");
             Double upp = (Double) result.get("upp");
+            Double confidence = (Double) result.get("confidence");
+            String category = (String) result.get("category");
 
 
             // base64转 MultipartFile，上传分析图（你现有代码）
@@ -96,13 +101,13 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             dto.setAnalyzedImagePath(analyzedImagePath);
             dto.setCreateTime(LocalDateTime.now());
             dto.setUpdateTime(LocalDateTime.now());
-            dto.setImageDetail(stats + "," +","+upp);
+            dto.setImageDetail(CATEGORY+category+","+CONFIDENCE+confidence+","+"长宽比分析："+stats + "," +","+upp);
             dto.setOriginalImagePath(originalImagePath);
 
             ImageDetailReturnDto returnDto = new ImageDetailReturnDto();
             BeanUtils.copyProperties(dto, returnDto);
 
-            System.out.print("图片分析"+dto.getImageDetail());
+            System.out.print("图片分析:"+dto.getImageDetail());
             ImageDetail imageDetail = new ImageDetail();
             BeanUtils.copyProperties(dto, imageDetail);
             imageDetailMapper.addNewImageDetail(imageDetail);
