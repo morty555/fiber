@@ -24,7 +24,20 @@
       <div class="result-content">
         <div class="result-item" v-for="(value, key) in analysisResult" :key="key">
           <span class="result-label">{{ key }}:</span>
-          <span class="result-value">{{ value }}</span>
+          <span v-if="!isComplex(value)" class="result-value">{{ value }}</span>
+          <div v-else class="nested-object">
+            <div v-for="(nestedValue, nestedKey) in value" :key="nestedKey">
+              <span v-if="!isArray(nestedValue)" class="nested-label">{{ nestedKey }}:</span>
+          <span v-if="!isArray(nestedValue)" class="result-value">{{ nestedValue }}</span>
+          <div v-else class="nested-object">
+           
+            <div v-for="(deepValue, deepKey) in nestedValue" :key="deepKey">
+              <span class="deep-label">{{ deepKey }}:</span>
+              <span class="result-value">{{ deepValue }}</span>
+            </div>
+          </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -83,7 +96,7 @@ export default {
     }
 
     const result = await response.json();
-    this.analysisResult = result;
+    this.analysisResult = result.data;
   } catch (error) {
     console.error('分析错误:', error);
     this.analysisResult = {
@@ -93,8 +106,13 @@ export default {
   } finally {
     this.isLoading = false;
   }
-}
-
+    },
+    isComplex(value) {
+      return typeof value === 'object' && value !== null;
+},
+isArray(value) {
+      return Array.isArray(value);
+    }
   }
 }
 </script>
@@ -153,6 +171,17 @@ export default {
 
 .result-label {
   font-weight: bold;
+  color: #1a5fb4;
+}
+.nested-object {
+  margin-left: 20px;
+}
+.nested-label {
+  font-weight: bold;
+  color: #1a5fb4;
+}
+.deep-label {
+  font-style: italic;
   color: #1a5fb4;
 }
 
