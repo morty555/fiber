@@ -151,12 +151,13 @@
 import { ref, computed, onMounted, watch,onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { API_BASE_URL } from '@/config'
 
 export default {
   setup() {
     const router = useRouter()
     
-    const API_BASE_URL = 'http://localhost:8081'
+    const API_URL = API_BASE_URL
     const authToken = localStorage.getItem('jwtToken')
 
     const records = ref([])
@@ -214,7 +215,7 @@ const totalRecords = computed(() => filteredRecords.value.length)
 
       try {
        const response = await axios.post(
-  `${API_BASE_URL}/function/history`,
+  `${API_URL}/function/history`,
   {
     page: currentPage.value,
     pageSize: pageSize.value,
@@ -260,7 +261,7 @@ const totalRecords = computed(() => filteredRecords.value.length)
     const deleteRecord = async (id) => {
       try {
         //console.log("do")
-        await axios.delete(`${API_BASE_URL}/function/history/${id}`, {
+        await axios.delete(`${API_URL}/function/history/${id}`, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }

@@ -41,6 +41,7 @@
 
 <script>
 import axios from 'axios'
+import { API_BASE_URL } from '@/config'
 
 export default {
   name: 'RegisterPage',
@@ -59,7 +60,7 @@ export default {
       }
 
       try {
-        const response = await axios.post('/api/register', {
+        const response = await axios.post(`${API_BASE_URL}/register`, {
           username: this.username,
           password: this.password
         })

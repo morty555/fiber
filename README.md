@@ -5,7 +5,7 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for developing frontend
 ```
 npm run serve
 ```
@@ -14,11 +14,11 @@ npm run serve
 ```
 npm run build
 ```
-### python project compiles
+### project compiles
 ```
-uv run python main.py
+python classify_api.py
 ```
-and you should install some libraies before running the project
+and you should install libraies before running the project
 
 
 ### Customize configuration

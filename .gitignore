@@ -23,6 +23,7 @@ pnpm-debug.log*
 *.sw?
 *.yml
 *.typ
+config.js
 光镜集
 input_images
 output_results

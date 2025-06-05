@@ -36,12 +36,14 @@
 </template>
 
 <script>
+import {API_BASE_URL} from '@/config'
+
 export default {
   data() {
     return {
       imagePreview: null,
       analysisResult: null,
-      isLoading: false
+      isLoading: false,
     }
   },
   methods: {
@@ -68,7 +70,8 @@ export default {
     const formData = new FormData();
     formData.append('file', this.$refs.fileInput.files[0]); // 直接上传原始文件，不用 base64
 
-    const response = await fetch('http://localhost:8081/fiber/analyze', {
+    const response = await fetch(`${API_BASE_URL}/fiber/analyze`,
+     {
       method: 'POST',
        headers: {
         'Authorization': `Bearer ${token}`

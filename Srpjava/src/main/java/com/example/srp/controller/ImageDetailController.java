@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/function")
+@RequestMapping("/api/function")
 public class ImageDetailController {
 
 

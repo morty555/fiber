@@ -29,6 +29,7 @@
 <script>
 import axios from 'axios'
 import emitter from '@/eventBus';
+import { API_BASE_URL } from '@/config'
 
 export default {
   name: 'LoginPage',
@@ -41,7 +42,7 @@ export default {
   methods: {
 async handleSubmit() {
   try {
-    const response = await axios.post('/api/login', {
+    const response = await axios.post(`${API_BASE_URL}/login`, {
       username: this.username,
       password: this.password
     });

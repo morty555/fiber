@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/fiber")
+@RequestMapping("/api/fiber")
 @Slf4j
 public class ImageAnalyzeController {
 

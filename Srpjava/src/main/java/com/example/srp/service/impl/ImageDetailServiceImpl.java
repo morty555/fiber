@@ -90,9 +90,16 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             Double confidence = (Double) result.get("confidence");
             String category = (String) result.get("category");
 
-
+            String analyzedImage = new String();
             // base64转 MultipartFile，上传分析图（你现有代码）
-            String analyzedImage = (String) result.get("image_base64");
+            try {
+                 analyzedImage = (String) result.get("image_base64");
+            }
+            catch (Exception e) {
+                log.error("获取分析图失败", e);
+                throw new RuntimeException("获取分析图失败，image_base64 字段无效");
+            }
+
             MultipartFile analyzedFile = base64ToMultipart(analyzedImage);
             String analyzedImagePath = uploadAliOss(analyzedFile, AliyunPathConstant.ANALYZED_IMAGE);
 

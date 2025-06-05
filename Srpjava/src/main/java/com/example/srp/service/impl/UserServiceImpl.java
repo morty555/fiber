@@ -61,6 +61,7 @@ public class UserServiceImpl implements UserService {
             throw new AccountExistedException(MessageConstant.ACCOUNT_EXISTED);
         }
         else{
+            user = new User();
             user.setUsername(username);
             user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
             user.setImage("");

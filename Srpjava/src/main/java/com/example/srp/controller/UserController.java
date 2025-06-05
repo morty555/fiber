@@ -18,7 +18,7 @@ import com.example.srp.pojo.vo.UserLoginVo;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequestMapping("/")
+@RequestMapping("/api")
 @RestController
 @Slf4j
 public class UserController {

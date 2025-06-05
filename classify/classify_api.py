@@ -7,6 +7,7 @@ import re
 import cv2
 import numpy as np
 import pandas as pd
+from pathlib import Path
 from skimage.morphology import skeletonize
 from PIL import Image, ImageDraw, ImageFont
 import pytesseract
@@ -14,8 +15,15 @@ import json
 import io
 import base64
 from typing import Dict
+from flask import Flask, jsonify, render_template, send_from_directory
 
-app = Flask(__name__)
+file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+template_dir = file_dir.parent / "dist"
+
+
+app = Flask(__name__,
+        static_folder=str(template_dir),
+        template_folder=str(template_dir))
 
 # 长宽比分析
 # ---------- 配置区 ----------
@@ -48,6 +56,19 @@ val_transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=mean, std=std)
 ])
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_vue_app(path):
+    if os.path.isfile(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    
+    # 对于非 API 请求，统一返回 index.html（前端路由）
+    if not path.startswith('api/') and not path.startswith(('login', 'register')):
+        return render_template("index.html")
+    
+    # 其他未匹配的直接 404
+    return '', 404
 
 
 # === 加载模型 ===
