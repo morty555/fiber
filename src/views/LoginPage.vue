@@ -20,8 +20,9 @@
         <button type="submit" class="login-btn">登录</button>
       </form>
       <p class="register-link">
-        还没有账号? <a href="/register">立即注册</a>
-      </p>
+         还没有账号? <router-link to="/register">立即注册</router-link>
+</p>
+
     </div>
   </div>
 </template>
