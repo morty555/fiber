@@ -32,6 +32,10 @@
                   <el-form-item label="分析结果">
                     <el-input type="textarea" v-model="formData.analysisResult" rows="4" placeholder="请输入分析结果" />
                   </el-form-item>
+                  <el-form-item label="分类">
+                    <el-input v-model="formData.category" placeholder="请输入分类" />
+                    </el-form-item>
+
                 </el-form>
 
                 <span slot="footer" class="dialog-footer">
@@ -92,6 +96,7 @@
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
             </span>
             </th>
+            <th class="category-column" @click="sortBy('type')">分类 </th>
             <th>操作</th>
         </tr>
         </thead>
@@ -105,7 +110,8 @@
                 @click="showImagePreview(getImageUrl(record.originalImage))"
             >
             </td>
-            <td>{{ getAnalysisDetail(record.detail) }}</td>
+            <td class="result-column">{{ getAnalysisDetail(record.detail) }}</td>
+            <td class="category-column">{{ record.type || '未分类' }}</td>
             <td>
             <button class="action-btn view-btn" @click="showParams(record)">详情</button>
             <button class="action-btn delete-btn" @click="confirmDelete(record.id)">删除</button>
@@ -187,6 +193,7 @@ export default {
     const formData = ref({
       file: null,
       analysisResult: '',
+      type:'',
     })
     const previewUrl = ref(null)
      function handleFileChange(event) {
@@ -209,10 +216,16 @@ export default {
         alert('请输入分析结果')
         return
       }
+      if(!formData.value.type.trim()){
+        alert('请输入类型')
+        return
+      }
 
       const postData = new FormData()
       postData.append('file', formData.value.file)
       postData.append('detail', formData.value.analysisResult)
+      postData.append('category', formData.value.category)
+
 
       try {
         await axios.post(`${API_URL}/function/addFiberdata`, postData, {
@@ -544,6 +557,22 @@ const totalRecords = ref(0)
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.category-column {
+  min-width: 140px;
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.result-column {
+  max-width: 300px;    
+  white-space: nowrap;  /* 不换行 */
+  overflow: hidden;     /* 超出隐藏 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
 }
 
 .search-box input {

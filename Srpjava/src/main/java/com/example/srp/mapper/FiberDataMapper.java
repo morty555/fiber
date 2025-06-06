@@ -17,4 +17,6 @@ public interface FiberDataMapper {
 
     @Delete("delete from fiber_data where id = #{id}")
     void deleteById(Long id);
+
+    Page<FiberDataVo> pageQuerySimilarImageDetail(String imageDetailQueryAllDto);
 }

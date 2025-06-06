@@ -10,4 +10,6 @@ public interface FiberDataService {
     void addNewRecord(MultipartFile file, String detail);
 
     PageResult pageQueryAll(ImageDetailQueryAllDto imageDetailQueryAllDto);
+
+    PageResult pageQuerySimilarImageDetail(MultipartFile file,int pageNo, int pageSize);
 }

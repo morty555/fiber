@@ -10,5 +10,6 @@ public class FiberDataVo implements Serializable {
     private long id;
     private String originalImage;
     private String detail;
+    private String type;
 
 }

@@ -8,7 +8,8 @@
         SELECT
         id,
         original_image,
-        detail
+        detail,
+        type
         FROM fiber_data
         <where>
             <if test="search != null and search != ''">
@@ -17,4 +18,15 @@
         </where>
     </select>
 
-    </mapper>
+    <select id="pageQuerySimilarImageDetail" parameterType="string" resultType="com.example.srp.pojo.vo.FiberDataVo">
+        SELECT
+            id,
+            original_image,
+            detail,
+            type
+        FROM fiber_data
+        WHERE type = #{type}
+    </select>
+
+
+</mapper>

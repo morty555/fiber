@@ -66,4 +66,19 @@ public class AliOssUtil {
 
         return stringBuilder.toString();
     }
+    public boolean exists(String objectName) {
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        try {
+            return ossClient.doesObjectExist(bucketName, objectName);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+    /**
+     * 根据 objectName 生成文件访问 URL
+     */
+    public String generateUrl(String objectName) {
+        return "https://" + bucketName + "." + endpoint + "/" + objectName;
+    }
+
 }

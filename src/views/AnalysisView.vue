@@ -77,10 +77,10 @@ export default {
           description: '查找相似图片'
         },
         {
-          id: 'orientation',
-          name: '功能',
+          id: 'graph',
+          name: '多维统计图表与趋势分析',
           icon: '🧭',
-          description: '功能描述'
+          description: '纤维数据的可视化'
         }
       ],
       selectedTool: null,
@@ -105,6 +105,9 @@ this.$router.push('/image')
     
     else if(toolId === 'fiberdata'){
       this.$router.push('/fiberdata')
+    }
+    else if(toolId === 'graph'){
+      this.$router.push('/graph')
     }
     else {
       this.selectedTool = toolId

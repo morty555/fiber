@@ -34,7 +34,7 @@
     <!-- 错误提示 -->
     <div v-if="error" class="error-message">
       <span>{{ error }}</span>
-      <button @click="fetchRecords">重试</button>
+      <button @click="analyzeImage">重试</button>
     </div>
 
     <!-- 加载 -->
@@ -46,7 +46,7 @@
     <!-- 没有记录 -->
     <div v-else-if="!loading && totalRecords === 0" class="empty-state">
       <p>暂无相似记录</p>
-      <button @click="fetchRecords">刷新</button>
+      <button @click="analyzeImage">刷新</button>
     </div>
 
     <div v-else class="history-table">
@@ -63,12 +63,13 @@
             <td>{{ record.id }}</td>
             <td>
               <img 
-                :src="getImageUrl(record.originalImagePath)" 
+                :src="getImageUrl(record.originalImage)" 
                 class="thumbnail" 
-                @click="showImagePreview(getImageUrl(record.originalImagePath))"
+                @click="showImagePreview(getImageUrl(record.originalImage))"
               >
             </td>
-            <td>{{ getAnalysisDetail(record.imageDetail) }}</td>
+            <td class="result-column">{{ getAnalysisDetail(record.detail) }}</td>
+            <td>{{ getAnalysisDetail(record.type) }}</td>
           </tr>
         </tbody>
       </table>
@@ -85,208 +86,154 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch,onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed,watch} from 'vue'
 import axios from 'axios'
+import { API_BASE_URL } from '@/config'
+
 export default {
   setup() {
-    const router = useRouter()
-    const API_BASE_URL = 'http://localhost:8000'
-    const authToken = localStorage.getItem('authToken')
+    const authToken = localStorage.getItem('jwtToken')
     const currentPage = ref(1)
     const pageSize = ref(5)
     const records = ref([])
+    const totalRecords = ref(0)
     const loading = ref(false)
-    const showModal = ref(false)
-    const previewImage = ref('')
-    const imagePreview =ref(null)
-    const isLoading=ref(false)
-    const fileInput = ref(null)
-   
     const error = ref(null)
-    const showTable = ref(false);
+    const fileInput = ref(null)
+    const imagePreview = ref(null)
+    const isLoading = ref(false)
 
-    const triggerUpload=()=> {
-      fileInput.value.click();
-    }
-    const handleFileUpload=(event)=> {
-      const file = event.target.files[0];
+    const triggerUpload = () => {
+          if (fileInput.value) {
+            fileInput.value.click()
+          }
+      }
+
+    // 上传文件预览
+    const handleFileUpload = (event) => {
+      const file = event.target.files[0]
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          imagePreview.value = e.target.result;
-          records.value=[]
-        };
-        reader.readAsDataURL(file);
+        const reader = new FileReader()
+        reader.onload = e => {
+          imagePreview.value = e.target.result
+          records.value = []
+          totalRecords.value = 0
+        }
+        reader.readAsDataURL(file)
       }
     }
-
-  const  analyzeImage=async()=> {
-      const token = localStorage.getItem('jwtToken');
-    if (!fileInput.value || !fileInput.value.files || fileInput.value.files.length === 0)
-    {
-      error.value = '请先选择一个文件';
-      return;
-}
- isLoading.value = true;
-  try {
-    const formData = new FormData();
-    formData.append('file', fileInput.value.files[0]); // 直接上传原始文件，不用 base64
-    const response = await axios.post(`${API_BASE_URL}/function/history`,
-      {
-       headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData,
-    })
-
-    if (!response.ok) {
-      throw new Error('分析请求失败');
+  const showImagePreview = (imageUrl) => {
+      previewImage.value = imageUrl
+      showModal.value = true
     }
-    records.value = response.data.data
-    
-  } catch (error) {
-    alert('未找到相似图片')
-    error.value = error.message;
-  } finally {
-   isLoading.value = false;
-  }
+     // 关闭
+    const closeModal = () => {
+      showModal.value = false
+      previewImage.value = ''
     }
 
-    const fetchRecords = async () => {
-      loading.value = true
+    const closeParamsModal = () => {
+      showParamsModal.value = false
+      currentParams.value = {}
+    }
+
+    // 图片处理
+    const getImageUrl = (path) => {
+      //console.log(path)
+      return path || 'https://via.placeholder.com/150?text=No+Image'
+    }
+       // 分析类型
+    const getAnalysisDetail = (imageDetail) => {
+      return  imageDetail
+    }
+    // 上传图片 + 请求分页数据
+    const analyzeImage = async () => {
+      if (!fileInput.value.files.length) {
+        error.value = '请先选择文件'
+        return
+      }
+      isLoading.value = true
       error.value = null
       try {
-       const response = await axios.post(
-  `${API_BASE_URL}/function/history`,
-  {
-    page: currentPage.value,
-    pageSize: pageSize.value,
-  },
-  {
-    headers: {
-      'Authorization': `Bearer ${authToken}`
-    }
-  }
-)
-        records.value = response.data.data
-        if(records.value.length===0)currentPage.value=0
-      } catch (error) {
-        handleApiError(error)
+        const formData = new FormData()
+        formData.append('file', fileInput.value.files[0])
+        formData.append('pageNum', currentPage.value)
+        formData.append('pageSize', pageSize.value)
+
+        const response = await axios.post(`${API_BASE_URL}/function/image`, formData, {
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            
+          }
+        })
+
+       records.value = response.data.data  // 这是分页对象
+        totalRecords.value = response.data.data.total || 0
+      } catch (err) {
+        error.value = err.message || '请求失败'
       } finally {
-        loading.value = false
+        isLoading.value = false
       }
     }
-    const handleApiError = (err) => {
-      const status = err.response?.status
-      
-      if (status === 401) {
-        error.value = '登录已过期，请重新登录'
-        router.push('/login')
-      } else if (status === 403) {
-        error.value = '没有权限访问此资源'
-      } else if (status === 404) {
-        error.value = '请求的资源不存在'
-      } else {
-        error.value =err.response?.data?.message || err.message || '网络请求失败'
-      }
-      
-      alert(error.value)
-    }
+
+    const totalPages = computed(() => {
+      return Math.ceil(totalRecords.value / pageSize.value) || 1
+    })
+       const paginatedRecords = computed(() => {
+  return records.value?.records || []
+})
 
     const prevPage = () => {
       if (currentPage.value > 1) {
         currentPage.value--
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-        fetchRecords()
+        analyzeImage()
       }
     }
 
     const nextPage = () => {
       if (currentPage.value < totalPages.value) {
         currentPage.value++
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-        fetchRecords()
+        analyzeImage()
       }
     }
 
     const handlePageSizeChange = () => {
       currentPage.value = 1
-      fetchRecords()
-    }
-// 图片URL处理
-    const getImageUrl = (path) => {
-      return path ? `${API_BASE_URL}/uploads/${path}` : 'https://via.placeholder.com/150?text=No+Image'
+      analyzeImage()
     }
 
-    const getAnalysisDetail = (imageDetail) => {
-      return imageDetail || '无详细信息'
-    }
+    watch(currentPage, () => {
+  analyzeImage()
+})
 
-    const showImagePreview = (imageUrl) => {
-      previewImage.value = imageUrl
-      showModal.value = true
-    }
-    const closeModal = () => {
-      showModal.value = false
-      previewImage.value = ''
-    }
-    const totalRecords = computed(() => records.value.length)
-
-    const totalPages = computed(() => {
-      return Math.ceil(totalRecords.value / pageSize.value)
-    })
-    const paginatedRecords = computed(() => {
-      const start = (currentPage.value - 1) * pageSize.value
-      return records.value.slice(start, start + pageSize.value)
-      //return records.value
-    })
-    onMounted(fetchRecords)
-    onMounted(() => {
-      window.addEventListener('refresh-history', fetchRecords)
-    })
-    
-    onBeforeUnmount(() => {
-      window.removeEventListener('refresh-history', fetchRecords)
-    })
-    watch(
-      () => router.currentRoute.value,
-      (to) => {
-        if (to.name === 'image') {
-          fetchRecords()
-        }
-      }
-    )
 
     return {
-      loading,
-      error,
-      previewImage,
-     imagePreview,
-      isLoading,
-      getImageUrl,
-      totalPages,
-      paginatedRecords,
-      fileInput,
-      totalRecords,
-      showTable,
       currentPage,
       pageSize,
-      nextPage,
-      prevPage,
-      triggerUpload,
+      records,
+      totalRecords,
+      imagePreview,
+      isLoading,
+      error,
+      fileInput,
+      analyzeImage,
       handleFileUpload,
+      prevPage,
+      nextPage,
+      handlePageSizeChange,
+       triggerUpload,
+      totalPages,
+      paginatedRecords,
+      getImageUrl,
       getAnalysisDetail,
       showImagePreview,
       closeModal,
-      handlePageSizeChange,
-     analyzeImage,
-      fetchRecords,
-      handleApiError
+      closeParamsModal,
     }
   }
 }
 </script>
+
 
 <style scoped>
 
@@ -437,6 +384,13 @@ th:hover {
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.2s;
+}
+
+.result-column {
+  max-width: 300px;    
+  white-space: nowrap;  /* 不换行 */
+  overflow: hidden;     /* 超出隐藏 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
 }
 
 .thumbnail:hover {

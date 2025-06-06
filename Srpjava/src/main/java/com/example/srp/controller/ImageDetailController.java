@@ -65,4 +65,28 @@ public class ImageDetailController {
         fiberDataService.deleteFiberData(id);
         return Result.success();
     }
+
+    @PostMapping("/image")
+    public Result<PageResult> getSimilarImageDetail(@RequestParam("file") MultipartFile file,@RequestParam int pageNum,
+                                                    @RequestParam int pageSize){
+        PageResult pageResult = fiberDataService.pageQuerySimilarImageDetail(file,pageNum,pageSize);
+        System.out.print(pageResult);
+        return Result.success(pageResult);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    @GetMapping("/analysis/type-count")
+    public Result getDataType(){
+
+        return null;
+    }
 }

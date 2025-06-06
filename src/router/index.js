@@ -9,6 +9,7 @@ import RegisterPage from '@/views/RegisterPage.vue'
 import HistoryView from '@/views/HistoryView.vue'
 import ImageView from '@/views/ImageView.vue'
 import FiberDataView from '@/views/FiberDataView.vue'
+import DataGraphView from '@/views/DataGraphView.vue'
 const routes = [
   {
     path: '/',
@@ -76,8 +77,16 @@ const routes = [
       component: FiberDataView,
       meta: {
         requiresAuth: true,
+     }
+    },
+       {
+      path: '/graph',
+      name: 'graph',
+      component: DataGraphView,
+      meta: {
+        requiresAuth: true,
       }
-}
+        }
 ]
 
 const router = createRouter({

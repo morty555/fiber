@@ -87,7 +87,7 @@
                 @click="showImagePreview(getImageUrl(record.originalImagePath))"
               >
             </td>
-            <td>{{ getAnalysisDetail(record.imageDetail) }}</td>
+            <td class="result-column">{{ getAnalysisDetail(record.imageDetail) }}</td>
             <td>{{ formatDateTime(record.createTime) }}</td>
           
             <td>
@@ -546,7 +546,12 @@ const totalRecords = ref(0)
   padding: 40px;
   color: #666;
 }
-
+.result-column {
+  max-width: 300px;    
+  white-space: nowrap;  /* 不换行 */
+  overflow: hidden;     /* 超出隐藏 */
+  text-overflow: ellipsis; /* 超出显示省略号 */
+}
 .spinner {
   width: 40px;
   height: 40px;
