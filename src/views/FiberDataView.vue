@@ -38,10 +38,13 @@
 
                 </el-form>
 
-                <span slot="footer" class="dialog-footer">
-                  <el-button @click="showDialog = false">取消</el-button>
-                  <el-button type="primary" @click="submitForm">确认提交</el-button>
-                </span>
+                <template v-slot:footer >
+                  <span class="dialog-footer">
+                    <el-button @click="showDialog = false">取消</el-button>
+                    <el-button type="primary" @click="submitForm">确认提交</el-button>
+                  </span>
+                  
+                </template>
               </el-dialog>
 
         </div>  
