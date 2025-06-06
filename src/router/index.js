@@ -7,6 +7,7 @@ import MoreView from '@/views/MoreView.vue'
 import FiberView from '@/views/FiberView.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
 import HistoryView from '@/views/HistoryView.vue'
+import ImageView from '@/views/ImageView.vue'
 const routes = [
   {
     path: '/',
@@ -59,7 +60,15 @@ const routes = [
       meta: {
         requiresAuth: true,
       }
+  },
+  {
+    path: '/image',
+    name: 'image',
+    component: ImageView,
+    meta: {
+      requiresAuth: true,
     }
+}
 ]
 
 const router = createRouter({
