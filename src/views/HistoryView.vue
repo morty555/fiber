@@ -288,6 +288,7 @@ const totalRecords = ref(0)
       if (currentPage.value > 1) {
         currentPage.value--
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        fetchRecords()
       }
     }
 
@@ -295,6 +296,7 @@ const totalRecords = ref(0)
       if (currentPage.value < totalPages.value) {
         currentPage.value++
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        fetchRecords()
       }
     }
 

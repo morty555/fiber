@@ -189,8 +189,10 @@ isArray(value) {
 }
 
 .analyze-btn {
-  margin-top: 20px;
-  padding: 10px 25px;
+  display: block;
+  margin: 20px auto;
+  width: 80px;
+  height: 40px;
   background-color: #1a5fb4;
   color: white;
   border: none;
