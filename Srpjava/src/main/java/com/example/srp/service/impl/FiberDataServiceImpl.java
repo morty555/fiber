@@ -4,7 +4,10 @@ import com.example.srp.constant.AliyunPathConstant;
 import com.example.srp.mapper.FiberDataMapper;
 import com.example.srp.pojo.dto.FiberDataDto;
 import com.example.srp.pojo.dto.ImageDetailQueryAllDto;
+import com.example.srp.pojo.dto.TypeGraphDto;
+import com.example.srp.pojo.vo.DailyCountVo;
 import com.example.srp.pojo.vo.FiberDataVo;
+import com.example.srp.pojo.vo.TypeGraphVo;
 import com.example.srp.result.PageResult;
 import com.example.srp.service.FiberDataService;
 import com.example.srp.utils.AliOssUtil;
@@ -13,6 +16,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -31,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -160,8 +165,17 @@ public class FiberDataServiceImpl implements FiberDataService {
         }
     }
 
+    @Override
+    public List<TypeGraphVo> getTypeCounts() {
+        List<TypeGraphVo> list  = fiberDataMapper.countType();
+        return list;
+    }
 
-
+    @Override
+    public List<DailyCountVo> dailyCount() {
+        List<DailyCountVo> dailyCountVos = fiberDataMapper.dailyCount();
+        return dailyCountVos;
+    }
 
 
     private String upload(File file, String pathPrefix, Long id) {

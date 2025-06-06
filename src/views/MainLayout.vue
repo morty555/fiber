@@ -19,9 +19,10 @@
     </nav>
 
     <!-- 轮播图 -->
-    <div class="carousel-container">
-      <Carousel :slides="slides" />
-    </div>
+      <div class="carousel-container" v-if="isGuidePage">
+        <Carousel :slides="slides" />
+      </div>
+
 
     <!-- 内容区域 -->
     <main class="main-content">
@@ -40,7 +41,8 @@
 
 <script>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
+import { useRouter ,useRoute} from 'vue-router'
 import NavButton from '../components/NavButton.vue'
 import Carousel from '@/components/Carousel.vue'
 import GuideView from './GuideView.vue'
@@ -61,17 +63,20 @@ export default {
     MoreView,
     LoginButton,
     HistoryView,
+
   },
  
   setup() {
 
      const router = useRouter() // 获取路由实例
+     const route = useRoute()
     const isLoggedIn = ref(localStorage.getItem('loggedIn') === 'true')
+    const isGuidePage = computed(() => route.name === 'guide')
 
     const navButtons = [
       { id: 'guide', title: '操作指南' },
       { id: 'fiber', title: '纤维识别' },
-      { id: 'function', title: '图像分析' },
+      { id: 'function', title: '其他功能' },
       { id: 'more', title: '更多' }
     ]
     
@@ -140,6 +145,8 @@ export default {
       handleLogout,
       isLoggedIn,
       handleAnalysisComplete,
+      isGuidePage,
+
     }
   }
 }

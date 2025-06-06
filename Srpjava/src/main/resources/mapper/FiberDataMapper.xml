@@ -28,5 +28,20 @@
         WHERE type = #{type}
     </select>
 
+    <select id="countType" resultType="com.example.srp.pojo.vo.TypeGraphVo">
+        SELECT
+            type,
+            count(*) AS count
+        FROM fiber_data
+        GROUP BY type
+    </select>
+
+    <select id="dailyCount" resultType="com.example.srp.pojo.vo.DailyCountVo">
+        SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date,
+        COUNT(*) AS count
+        FROM fiber_data
+        GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
 
 </mapper>

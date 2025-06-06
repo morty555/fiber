@@ -1,11 +1,10 @@
 package com.example.srp.controller;
 
-import com.example.srp.pojo.dto.FiberDataDto;
-import com.example.srp.pojo.dto.ImageDetailDto;
-import com.example.srp.pojo.dto.ImageDetailQueryAllDto;
-import com.example.srp.pojo.dto.ImageDetailQueryDto;
+import com.example.srp.pojo.dto.*;
+import com.example.srp.pojo.vo.DailyCountVo;
 import com.example.srp.pojo.vo.FiberDataVo;
 import com.example.srp.pojo.vo.ImageDetailVo;
+import com.example.srp.pojo.vo.TypeGraphVo;
 import com.example.srp.result.PageResult;
 import com.example.srp.result.Result;
 import com.example.srp.service.FiberDataService;
@@ -14,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -74,19 +76,18 @@ public class ImageDetailController {
         return Result.success(pageResult);
     }
 
-
-
-
-
-
-
-
-
-
-
     @GetMapping("/analysis/type-count")
-    public Result getDataType(){
+    public Result getDataTypeCount(){
 
-        return null;
+        List<TypeGraphVo> typeCounts = fiberDataService.getTypeCounts();
+        log.info("类型统计{}",typeCounts);
+        return Result.success(typeCounts);
+
+    }
+
+    @GetMapping("/analysis/daily-count")
+    public Result getDailyCount(){
+        List<DailyCountVo> dailyCountVos = fiberDataService.dailyCount();
+        return Result.success(dailyCountVos);
     }
 }

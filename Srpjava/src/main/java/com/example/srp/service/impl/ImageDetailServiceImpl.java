@@ -4,6 +4,7 @@ import com.example.srp.constant.AliyunPathConstant;
 import com.example.srp.mapper.ImageDetailMapper;
 import com.example.srp.pojo.dto.*;
 import com.example.srp.pojo.entity.ImageDetail;
+import com.example.srp.pojo.vo.DailyCountVo;
 import com.example.srp.pojo.vo.FiberDataVo;
 import com.example.srp.pojo.vo.ImageDetailVo;
 import com.example.srp.result.PageResult;
@@ -112,7 +113,8 @@ public class ImageDetailServiceImpl implements ImageDetailService{
             dto.setAnalyzedImagePath(analyzedImagePath);
             dto.setCreateTime(LocalDateTime.now());
             dto.setUpdateTime(LocalDateTime.now());
-            dto.setImageDetail(CATEGORY+category+","+CONFIDENCE+confidence+","+"长宽比分析："+stats + "," +","+upp);
+//            dto.setImageDetail(CATEGORY+category+","+CONFIDENCE+confidence+","+"长宽比分析："+stats + "," +","+upp);
+            dto.setImageDetail(CATEGORY+category+","+CONFIDENCE+confidence+","+"长宽比分析："+stats );
             dto.setOriginalImagePath(originalImagePath);
 
             ImageDetailReturnDto returnDto = new ImageDetailReturnDto();
@@ -177,6 +179,8 @@ public class ImageDetailServiceImpl implements ImageDetailService{
     public void deleteDetail(Long id) {
          imageDetailMapper.deleteDetailById(id);
     }
+
+
 
 
     private String upload(File file, String pathPrefix, Long id) {

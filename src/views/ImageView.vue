@@ -86,9 +86,10 @@
 </template>
 
 <script>
-import { ref, computed,watch} from 'vue'
+import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 import { API_BASE_URL } from '@/config'
+import Tiff from 'tiff.js'
 
 export default {
   setup() {
@@ -104,29 +105,52 @@ export default {
     const isLoading = ref(false)
 
     const triggerUpload = () => {
-          if (fileInput.value) {
-            fileInput.value.click()
-          }
-      }
-
-    // 上传文件预览
-    const handleFileUpload = (event) => {
-      const file = event.target.files[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = e => {
-          imagePreview.value = e.target.result
-          records.value = []
-          totalRecords.value = 0
-        }
-        reader.readAsDataURL(file)
+      if (fileInput.value) {
+        fileInput.value.click()
       }
     }
-  const showImagePreview = (imageUrl) => {
+
+   const handleFileUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+
+    // 判断文件类型，是否为 TIFF
+    if (file.type === 'image/tiff') {
+      reader.onload = e => {
+        const arrayBuffer = e.target.result;
+        try {
+          const tiff = new Tiff({buffer: arrayBuffer});
+          const canvas = tiff.toCanvas();
+          // 直接获取 PNG 数据
+          imagePreview.value = canvas.toDataURL('image/png');
+          records.value = [];
+          totalRecords.value = 0;
+        } catch (error) {
+          console.error('TIFF 转换失败:', error);
+          error.value = '转换 TIFF 图片失败';
+        }
+      };
+      reader.readAsArrayBuffer(file); // 读取文件为 ArrayBuffer
+    } else {
+      reader.onload = e => {
+        // 普通的图片处理
+        imagePreview.value = e.target.result.replace(/^data:image\/\w+;base64,/, 'data:image/png;base64,');
+        records.value = [];
+        totalRecords.value = 0;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+}
+
+
+    const showImagePreview = (imageUrl) => {
       previewImage.value = imageUrl
       showModal.value = true
     }
-     // 关闭
+
+    // 关闭
     const closeModal = () => {
       showModal.value = false
       previewImage.value = ''
@@ -139,13 +163,15 @@ export default {
 
     // 图片处理
     const getImageUrl = (path) => {
-      //console.log(path)
-      return path || 'https://via.placeholder.com/150?text=No+Image'
+      // 将图片路径更改为 PNG 格式
+      return path ? `${path.split('?')[0]}.png` : 'https://via.placeholder.com/150?text=No+Image'
     }
-       // 分析类型
+
+    // 分析类型
     const getAnalysisDetail = (imageDetail) => {
-      return  imageDetail
+      return imageDetail
     }
+
     // 上传图片 + 请求分页数据
     const analyzeImage = async () => {
       if (!fileInput.value.files.length) {
@@ -163,11 +189,10 @@ export default {
         const response = await axios.post(`${API_BASE_URL}/function/image`, formData, {
           headers: {
             'Authorization': `Bearer ${authToken}`,
-            
           }
         })
 
-       records.value = response.data.data  // 这是分页对象
+        records.value = response.data.data  // 这是分页对象
         totalRecords.value = response.data.data.total || 0
       } catch (err) {
         error.value = err.message || '请求失败'
@@ -179,9 +204,10 @@ export default {
     const totalPages = computed(() => {
       return Math.ceil(totalRecords.value / pageSize.value) || 1
     })
-       const paginatedRecords = computed(() => {
-  return records.value?.records || []
-})
+
+    const paginatedRecords = computed(() => {
+      return records.value?.records || []
+    })
 
     const prevPage = () => {
       if (currentPage.value > 1) {
@@ -203,9 +229,8 @@ export default {
     }
 
     watch(currentPage, () => {
-  analyzeImage()
-})
-
+      analyzeImage()
+    })
 
     return {
       currentPage,
@@ -221,7 +246,7 @@ export default {
       prevPage,
       nextPage,
       handlePageSizeChange,
-       triggerUpload,
+      triggerUpload,
       totalPages,
       paginatedRecords,
       getImageUrl,
