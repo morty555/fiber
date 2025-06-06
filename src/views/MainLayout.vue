@@ -7,8 +7,8 @@
 <!-- 顶部校徽和标题  -->
     <header class="header">
       <div class="logo-container">
-        <img src="https://via.placeholder.com/80x80" alt="校徽" class="logo">
-        <h1>XX大学纤维研究中心</h1>
+        <!-- <img src="https://via.placeholder.com/80x80" alt="校徽" class="logo"> -->
+        <h1>华南理工大学纤维分析平台</h1> 
       </div>
     </header>
 
@@ -32,8 +32,8 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-      <p>© 2023 XX大学纤维研究中心 版权所有</p>
-      <p>地址：XX省XX市XX区XX路XX号</p>
+      <p>© 2023 华南理工大学纤维研究中心 版权所有</p>
+      <p>地址：广东省广州市番禺区外环东路382号</p>
     </footer>
   
   </div>
@@ -109,19 +109,19 @@ export default {
       {
         id: 1,
         title: '校园风光',
-        image: 'https://via.placeholder.com/1200x400?text=校园风光1',
+        image: 'https://srp-fiber.oss-cn-beijing.aliyuncs.com/237d-c37259b60325aabc33879e0abc314d88.jpg',
         description: '美丽的校园环境'
       },
       {
         id: 2,
-        title: '科研成果',
-        image: 'https://via.placeholder.com/1200x400?text=科研成果展示',
-        description: '最新的纤维研究突破'
+        title: '科研竞赛',
+        image: 'https://srp-fiber.oss-cn-beijing.aliyuncs.com/20240513141836714.jpg',
+        description: '浓厚的竞赛氛围'
       },
       {
         id: 3,
         title: '学术活动',
-        image: 'https://via.placeholder.com/1200x400?text=学术讲座现场',
+        image: 'https://srp-fiber.oss-cn-beijing.aliyuncs.com/13e6283a-8998-430c-ada9-62dbc5bdb1b5.jpg',
         description: '丰富的学术交流活动'
       }
     ]

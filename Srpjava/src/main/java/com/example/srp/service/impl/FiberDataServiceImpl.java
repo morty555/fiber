@@ -180,7 +180,7 @@ public class FiberDataServiceImpl implements FiberDataService {
 
     private String upload(File file, String pathPrefix, Long id) {
         try {
-            String objectName = pathPrefix + id + ".png";
+            String objectName =AliyunPathConstant.FIBERDATA_IMAGE+ pathPrefix + id + ".png";
 
             // 如果已存在，直接返回URL
             if (aliOssUtil.exists(objectName)) {
