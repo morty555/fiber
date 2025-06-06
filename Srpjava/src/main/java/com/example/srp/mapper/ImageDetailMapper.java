@@ -1,8 +1,11 @@
 package com.example.srp.mapper;
 
+import com.example.srp.pojo.dto.FiberDataDto;
 import com.example.srp.pojo.dto.ImageDetailDto;
+import com.example.srp.pojo.dto.ImageDetailQueryAllDto;
 import com.example.srp.pojo.dto.ImageDetailQueryDto;
 import com.example.srp.pojo.entity.ImageDetail;
+import com.example.srp.pojo.vo.FiberDataVo;
 import com.example.srp.pojo.vo.ImageDetailVo;
 import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Delete;
@@ -18,4 +21,7 @@ public interface ImageDetailMapper {
 
     @Delete("delete from image_detail where id = #{id}")
     void deleteDetailById(Long id);
+
+
+
 }

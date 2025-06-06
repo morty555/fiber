@@ -2,13 +2,11 @@ package com.example.srp.service.impl;
 
 import com.example.srp.constant.AliyunPathConstant;
 import com.example.srp.mapper.ImageDetailMapper;
-import com.example.srp.pojo.dto.ImageDetailDto;
-import com.example.srp.pojo.dto.ImageDetailQueryDto;
-import com.example.srp.pojo.dto.ImageDetailReturnDto;
+import com.example.srp.pojo.dto.*;
 import com.example.srp.pojo.entity.ImageDetail;
+import com.example.srp.pojo.vo.FiberDataVo;
 import com.example.srp.pojo.vo.ImageDetailVo;
 import com.example.srp.result.PageResult;
-import com.example.srp.result.Result;
 import com.example.srp.service.ImageDetailService;
 import com.example.srp.utils.AliOssUtil;
 import com.example.srp.utils.Base64ToMultipartUtil;
@@ -16,7 +14,6 @@ import com.example.srp.utils.ThreadLocalUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.glassfish.jaxb.core.v2.TODO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -51,7 +48,8 @@ public class ImageDetailServiceImpl implements ImageDetailService{
         ImageDetailDto dto = new ImageDetailDto();
         Long currentId = ThreadLocalUtil.getCurrentId();
         // 上传原始图片
-        String originalImagePath = uploadAliOss(file, AliyunPathConstant.ORIGINAL_IMAGE);
+//        String originalImagePath = uploadAliOss(file, AliyunPathConstant.ORIGINAL_IMAGE);
+        String originalImagePath = uploadAliOss(file, AliyunPathConstant.FIBERDATA_IMAGE);
 
         try {
             // 生成 Base64 原图字符串
@@ -141,6 +139,8 @@ public class ImageDetailServiceImpl implements ImageDetailService{
     public void deleteDetail(Long id) {
          imageDetailMapper.deleteDetailById(id);
     }
+
+
 
     public String uploadAliOss(MultipartFile file,String path) {
         String filePath;

@@ -7,6 +7,7 @@ import MoreView from '@/views/MoreView.vue'
 import FiberView from '@/views/FiberView.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
 import HistoryView from '@/views/HistoryView.vue'
+import FiberDataView from '@/views/FiberDataView.vue'
 const routes = [
   {
     path: '/',
@@ -56,6 +57,14 @@ const routes = [
      path: '/history',
      name: 'history',
       component: HistoryView,
+      meta: {
+        requiresAuth: true,
+      }
+    },
+    {
+      path: '/fiberdata',
+      name: 'fiberdata',
+      component: FiberDataView,
       meta: {
         requiresAuth: true,
       }

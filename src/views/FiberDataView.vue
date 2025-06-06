@@ -1,7 +1,6 @@
-
 <template>
   <div class="history-view">
-    <h2>分析历史记录</h2>
+    <h2>纤维数据集</h2>
     
     <!-- 搜索和分页控制 -->
     <div class="controls">
@@ -12,11 +11,37 @@
           placeholder="搜索分析记录..."
           @input="handleSearch"
         >
+      
         <button class="refresh-btn" @click="fetchRecords">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
         </button>
+        <div>
+            <button @click="showDialog = true" class="add-btn">新增记录</button>
+
+            <el-dialog title="新增分析记录" v-model="showDialog" width="500px">
+                <el-form :model="formData" label-width="100px">
+                <el-form-item label="上传图片">
+                <input type="file" @change="handleFileChange" />
+                 <div v-if="previewUrl" style="margin-top:10px;">
+                <img :src="previewUrl" alt="预览" style="max-width: 100%; max-height: 200px" />
+                 </div>
+                  </el-form-item>
+
+                  <el-form-item label="分析结果">
+                    <el-input type="textarea" v-model="formData.analysisResult" rows="4" placeholder="请输入分析结果" />
+                  </el-form-item>
+                </el-form>
+
+                <span slot="footer" class="dialog-footer">
+                  <el-button @click="showDialog = false">取消</el-button>
+                  <el-button type="primary" @click="submitForm">确认提交</el-button>
+                </span>
+              </el-dialog>
+
+        </div>  
+       
       </div>
       
       <div class="pagination-controls">
@@ -53,57 +78,41 @@
 
     <!-- 表格 -->
     <div v-else class="history-table">
-      <table>
+            <table>
         <thead>
-          <tr>
+        <tr>
             <th @click="sortBy('id')">ID 
-              <span v-if="sortField === 'id'">
+            <span v-if="sortField === 'id'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
-              </span>
+            </span>
             </th>
             <th>样本图片</th>
             <th @click="sortBy('imageDetail')">分析结果
-              <span v-if="sortField === 'imageDetail'">
+            <span v-if="sortField === 'imageDetail'">
                 {{ sortOrder === 'asc' ? '↑' : '↓' }}
-              </span>
+            </span>
             </th>
-            <th @click="sortBy('create_time')">创建时间
-              <span v-if="sortField === 'create_time'">
-                {{ sortOrder === 'asc' ? '↑' : '↓' }}
-              </span>
-            </th>
-            
             <th>操作</th>
-          </tr>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="record in paginatedRecords" :key="record.id">
+        <tr v-for="record in paginatedRecords" :key="record.id">
             <td>{{ record.id }}</td>
-           
             <td>
-              <img 
-                :src="getImageUrl(record.originalImagePath)" 
+            <img 
+                :src="getImageUrl(record.originalImage)" 
                 class="thumbnail" 
-                @click="showImagePreview(getImageUrl(record.originalImagePath))"
-              >
+                @click="showImagePreview(getImageUrl(record.originalImage))"
+            >
             </td>
-            <td>{{ getAnalysisDetail(record.imageDetail) }}</td>
-            <td>{{ formatDateTime(record.createTime) }}</td>
-          
+            <td>{{ getAnalysisDetail(record.detail) }}</td>
             <td>
-              <button class="action-btn view-btn" @click="showParams(record)">
-                详情
-              </button>
-              <button 
-                class="action-btn delete-btn" 
-                @click="confirmDelete(record.id)"
-              >
-                删除
-              </button>
+            <button class="action-btn view-btn" @click="showParams(record)">详情</button>
+            <button class="action-btn delete-btn" @click="confirmDelete(record.id)">删除</button>
             </td>
-          </tr>
+        </tr>
         </tbody>
-      </table>
+        </table>
     </div>
 
     <!-- 图片预览-->
@@ -166,7 +175,7 @@ export default {
     const searchQuery = ref('')
     const currentPage = ref(1)
     const pageSize = ref(5)
-    const sortField = ref('create_time')
+    const sortField = ref('id') 
     const sortOrder = ref('desc')
     const showModal = ref(false)
     const previewImage = ref('')
@@ -174,21 +183,68 @@ export default {
     const currentParams = ref({})
     const showDeleteDialog = ref(false)
     const recordToDelete = ref(null)
-//     const filteredRecords = computed(() => {
-//   const raw = records.value?.records || []
-//   const query = searchQuery.value.toLowerCase()
+    const showDialog = ref(false)
+    const formData = ref({
+      file: null,
+      analysisResult: '',
+    })
+    const previewUrl = ref(null)
+     function handleFileChange(event) {
+      const file = event.target.files[0]
+      if (file) {
+        formData.value.file = file
+        previewUrl.value = URL.createObjectURL(file)
+      } else {
+        formData.value.file = null
+        previewUrl.value = null
+      }
+    }
 
-//   if (!query) return raw
+    async function submitForm() {
+      if (!formData.value.file) {
+        alert('请上传图片')
+        return
+      }
+      if (!formData.value.analysisResult.trim()) {
+        alert('请输入分析结果')
+        return
+      }
 
-//   return raw.filter(record => 
-//     record.id.toString().includes(query) ||
-//     (record.imageDetail && record.imageDetail.toLowerCase().includes(query)) ||
-//     formatDateTime(record.createTime).toLowerCase().includes(query)
-//   )
-// })
-const filteredRecords = computed(() => {
-  return records.value?.records || []
+      const postData = new FormData()
+      postData.append('file', formData.value.file)
+      postData.append('detail', formData.value.analysisResult)
+
+      try {
+        await axios.post(`${API_URL}/function/addFiberdata`, postData, {
+          headers: 
+          { 
+            'Authorization': `Bearer ${authToken}`
+           }
+        })
+        alert('提交成功')
+        showDialog.value = false
+        // 清空表单
+        formData.value.file = null
+        formData.value.analysisResult = ''
+        previewUrl.value = null
+      } catch (error) {
+        alert('提交失败，请重试')
+      }
+    }
+
+    const filteredRecords = computed(() => {
+  const raw = records.value?.records || []
+  const query = searchQuery.value.toLowerCase()
+
+  if (!query) return raw
+
+  return raw.filter(record => 
+    record.id.toString().includes(query) ||
+    (record.detail && record.detail.toLowerCase().includes(query)) ||
+    formatDateTime(record.createTime).toLowerCase().includes(query)
+  )
 })
+
 
 
 const sortedRecords = computed(() => {
@@ -196,13 +252,14 @@ const sortedRecords = computed(() => {
     let valA = a[sortField.value]
     let valB = b[sortField.value]
 
-    if (sortField.value === 'create_time') {
-      valA = new Date(valA).getTime()
-      valB = new Date(valB).getTime()
-    } else if (sortField.value === 'imageDetail') {
-      valA = a.imageDetail || ''
-      valB = b.imageDetail || ''
-    }
+   if (sortField.value === 'detail') {
+        valA = a.detail || ''
+        valB = b.detail || ''
+        } else {
+        valA = a[sortField.value]
+        valB = b[sortField.value]
+        }
+
 
     return sortOrder.value === 'asc' 
       ? valA > valB ? 1 : -1 
@@ -213,6 +270,7 @@ const sortedRecords = computed(() => {
 // const totalRecords = computed(() => filteredRecords.value.length)
 const totalRecords = ref(0)
 
+
     
     const fetchRecords = async () => {
       loading.value = true
@@ -220,7 +278,7 @@ const totalRecords = ref(0)
 
       try {
        const response = await axios.post(
-  `${API_URL}/function/history`,
+  `${API_URL}/function/fiberdata`,
   {
     page: currentPage.value,
     pageSize: pageSize.value,
@@ -237,7 +295,7 @@ const totalRecords = ref(0)
 
         records.value = response.data.data
         totalRecords.value = response.data.data.total
-            //console.log(records.value)
+            console.log(totalRecords.value)
          //console.log(authToken)
       } catch (error) {
         handleApiError(error)
@@ -266,7 +324,7 @@ const totalRecords = ref(0)
     const deleteRecord = async (id) => {
       try {
         //console.log("do")
-        await axios.delete(`${API_URL}/function/history/${id}`, {
+        await axios.delete(`${API_URL}/function/fiber/${id}`, {
           headers: {
             'Authorization': `Bearer ${authToken}`
           }
@@ -283,7 +341,6 @@ const totalRecords = ref(0)
       }
     }
 
-    // 分页
     const prevPage = () => {
       if (currentPage.value > 1) {
         currentPage.value--
@@ -303,13 +360,13 @@ const totalRecords = ref(0)
       fetchRecords()
     }
 
-    // 搜索
+   
     const handleSearch = () => {
       currentPage.value = 1
       fetchRecords()
     }
 
-    // 排序
+    
     const sortBy = (field) => {
       if (sortField.value === field) {
         sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
@@ -317,21 +374,21 @@ const totalRecords = ref(0)
         sortField.value = field
         sortOrder.value = 'asc'
       }
-      fetchRecords()  //触发重新请求
+      fetchRecords()  
     }
 
-    // 图片处理
+    
     const getImageUrl = (path) => {
       //console.log(path)
       return path || 'https://via.placeholder.com/150?text=No+Image'
     }
 
-    // 分析类型
-    const getAnalysisDetail = (imageDetail) => {
-      return  imageDetail
+   
+    const getAnalysisDetail = (detail) => {
+      return  detail
     }
 
-    // 日期格式化
+   
     const formatDateTime = (dateString) => {
       if (!dateString) return ''
       const options = { 
@@ -349,13 +406,13 @@ const totalRecords = ref(0)
       showParamsModal.value = true
     }
 
-    // 图片预览
+   
     const showImagePreview = (imageUrl) => {
       previewImage.value = imageUrl
       showModal.value = true
     }
 
-    // 确认删除
+    
     const confirmDelete = (id) => {
      
       recordToDelete.value = id
@@ -363,7 +420,6 @@ const totalRecords = ref(0)
       showDeleteDialog.value = true
     }
 
-    // 执行
     const executeDelete = () => {
      console.log(recordToDelete.value )
       if (recordToDelete.value) {
@@ -372,7 +428,7 @@ const totalRecords = ref(0)
       showDeleteDialog.value = false
     }
 
-    // 关闭
+    
     const closeModal = () => {
       showModal.value = false
       previewImage.value = ''
@@ -387,13 +443,13 @@ const totalRecords = ref(0)
       return Math.ceil(totalRecords.value / pageSize.value)
     })
 
-    // const paginatedRecords = computed(() => {
+    /* // const paginatedRecords = computed(() => {
     //   //console.log(records.value)
     //   const start = (currentPage.value - 1) * pageSize.value
     //   return sortedRecords.value.slice(start, start + pageSize.value)
     //  // return records.value
-    // })
-      const paginatedRecords = computed(() => {
+    // }) */
+    const paginatedRecords = computed(() => {
   return records.value?.records || []
 })
 
@@ -415,8 +471,9 @@ const totalRecords = ref(0)
         }
       }
     )
+    // 监听 currentPage 变化，自动请求新数据
     watch(currentPage, () => {
-        fetchRecords()
+      fetchRecords()
     })
 
     return {
@@ -456,6 +513,11 @@ const totalRecords = ref(0)
       executeDelete,
       closeModal,
       closeParamsModal,
+      showDialog,
+      formData,
+      previewUrl,
+      handleFileChange,
+      submitForm
       
     }
   }
@@ -795,3 +857,4 @@ th:hover {
   border-radius: 4px;
 }
 </style>
+ 

@@ -58,17 +58,17 @@ export default {
           id: 'history',
           name: '历史记录',
           icon: '📊',
-          description: '纤维图片与分析结果的历史记录',
+          description: '个人用户纤维图片与分析结果的历史记录',
           params: [
             { name: 'threshold', label: '阈值', type: 'number', min: 0, max: 255, step: 1 },
             { name: 'minArea', label: '最小面积', type: 'number', min: 1, step: 1 }
           ]
         },
         {
-          id: 'length',
-          name: '功能',
+          id: 'fiberdata',
+          name: '纤维数据集',
           icon: '📏',
-          description: '功能描述'
+          description: '数据库中所有纤维数据集合'
         },
         {
           id: 'color',
@@ -97,8 +97,12 @@ export default {
   methods: {
      selectTool(toolId) {
     if (toolId === 'history') {
-      this.$router.push('/history') // 👈 跳转到历史记录页面
-    } else {
+      this.$router.push('/history') 
+    } 
+    else if(toolId === 'fiberdata'){
+      this.$router.push('/fiberdata')
+    }
+    else {
       this.selectedTool = toolId
       this.showAnalysisResult = false
       if (this.selectedToolData.params) {
