@@ -22,26 +22,29 @@
     <div class="result-area" v-if="analysisResult">
       <h3>分析结果</h3>
       <div class="result-content">
-        <div class="result-item" v-for="(value, key) in analysisResult" :key="key">
-          <span class="result-label">{{ key }}:</span>
-          <span v-if="!isComplex(value)" class="result-value">{{ value }}</span>
-          <div v-else class="nested-object">
-            <div v-for="(nestedValue, nestedKey) in value" :key="nestedKey">
-              <span v-if="!isArray(nestedValue)" class="nested-label">{{ nestedKey }}:</span>
-          <span v-if="!isArray(nestedValue)" class="result-value">{{ nestedValue }}</span>
-          <div v-else class="nested-object">
-           
-            <div v-for="(deepValue, deepKey) in nestedValue" :key="deepKey">
-              <span class="deep-label">{{ deepKey }}:</span>
-              <span class="result-value">{{ deepValue }}</span>
-            </div>
-          </div>
-            </div>
-          </div>
-        </div>
+        <div class="result-item"> 
+        <span class="result-label">code:</span>
+        <span class="result-value">{{ analysisResult.code }}</span> 
+      </div>
+      <div class="result-item">
+        <span class="result-label">msg:</span>
+        <span class="result-value">{{ analysisResult.msg }}</span>
+      </div>
+      <div class="result-item">
+       <span class="result-label">analyzedImagePath:</span>
+        <span class="result-value">{{ analysisResult.data.originalImagePath}}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">analyzedImagePath:</span>
+        <span class="result-value">{{ analysisResult.data.analyzedImagePath }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">imageDetail:</span>
+        <div v-html="formatImageDetail()" class="result-detail"></div>
+       
+      </div>  
       </div>
     </div>
-    
     <button class="analyze-btn" @click="analyzeImage" :disabled="!imagePreview || isLoading">
       {{ isLoading ? '分析中...' : '开始分析' }}
     </button>
@@ -99,7 +102,7 @@ export default {
     }
 
     const result = await response.json();
-    this.analysisResult = result.data;
+    this.analysisResult = result;
   } catch (error) {
     console.error('分析错误:', error);
     this.analysisResult = {
@@ -110,11 +113,8 @@ export default {
     this.isLoading = false;
   }
     },
-    isComplex(value) {
-      return typeof value === 'object' && value !== null;
-},
-isArray(value) {
-      return Array.isArray(value);
+    formatImageDetail() {
+      return this.analysisResult.data.imageDetail.replace(/,/g, '<br>');
     }
   }
 }
@@ -174,17 +174,6 @@ isArray(value) {
 
 .result-label {
   font-weight: bold;
-  color: #1a5fb4;
-}
-.nested-object {
-  margin-left: 20px;
-}
-.nested-label {
-  font-weight: bold;
-  color: #1a5fb4;
-}
-.deep-label {
-  font-style: italic;
   color: #1a5fb4;
 }
 
