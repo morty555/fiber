@@ -71,10 +71,10 @@ export default {
           description: '功能描述'
         },
         {
-          id: 'color',
-          name: '功能',
+          id: 'image',
+          name: '图识图',
           icon: '🎨',
-          description: '功能描述'
+          description: '查找相似图片'
         },
         {
           id: 'orientation',
@@ -98,7 +98,11 @@ export default {
      selectTool(toolId) {
     if (toolId === 'history') {
       this.$router.push('/history') // 👈 跳转到历史记录页面
-    } else {
+    }
+    else if(toolId==='image'){
+this.$router.push('/image')
+    }
+    else {
       this.selectedTool = toolId
       this.showAnalysisResult = false
       if (this.selectedToolData.params) {
