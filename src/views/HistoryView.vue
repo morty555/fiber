@@ -283,6 +283,7 @@ const totalRecords = computed(() => filteredRecords.value.length)
       if (currentPage.value > 1) {
         currentPage.value--
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        fetchRecords()
       }
     }
 
@@ -290,6 +291,7 @@ const totalRecords = computed(() => filteredRecords.value.length)
       if (currentPage.value < totalPages.value) {
         currentPage.value++
         window.scrollTo({ top: 0, behavior: 'smooth' })
+        fetchRecords()
       }
     }
 
